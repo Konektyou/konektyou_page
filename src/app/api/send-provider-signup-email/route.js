@@ -6,31 +6,33 @@ export async function POST(request) {
   try {
     const { name, email, phone, serviceType, experience, area, businessName, documents, photo } = await request.json();
 
-    // Save provider data to local JSON "DB"
-    await appendJsonRecord('providerSignups.json', {
-      name,
-      email,
-      phone,
-      serviceType,
-      experience,
-      area,
-      businessName,
-      documents,
-      photoName: photo?.name || null
-    });
+    // Save provider data to local JSON "DB" (non-fatal)
+    try {
+      await appendJsonRecord('providerSignups.json', {
+        name,
+        email,
+        phone,
+        serviceType,
+        experience,
+        area,
+        businessName,
+        documents,
+        photoName: photo?.name || null
+      });
+    } catch (e) {
+      console.error('Storage error (non-fatal):', e);
+    }
 
     // Create transporter using Microsoft 365 SMTP (client-provided credentials)
     const transporter = nodemailer.createTransport({
       host: 'smtp.office365.com',
       port: 587,
-      secure: false, // use STARTTLS
+      secure: false, // STARTTLS
       auth: {
         user: 'hello@konektly.ca',
         pass: 'Welcome@123',
       },
-      tls: {
-        ciphers: 'SSLv3'
-      }
+      tls: { minVersion: 'TLSv1.2' }
     });
 
     // Email content
@@ -85,7 +87,11 @@ export async function POST(request) {
 
     return NextResponse.json({ success: true, message: 'Provider signup email sent successfully' });
   } catch (error) {
-    console.error('Error sending provider signup email:', error);
+    console.error('Error sending provider signup email:', {
+      message: error?.message,
+      code: error?.code,
+      response: error?.response,
+    });
     return NextResponse.json(
       { success: false, message: 'Failed to send provider signup email' },
       { status: 500 }

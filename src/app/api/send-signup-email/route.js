@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import { appendJsonRecord } from '@/lib/storage';
+import { connectToDatabase } from '@/lib/mongodb';
+import ClientSignup from '@/models/ClientSignup';
 
 export async function POST(request) {
   try {
@@ -64,6 +66,14 @@ export async function POST(request) {
 
     // Send email
     await transporter.sendMail(mailOptions);
+
+    // After successful email, save to MongoDB
+    try {
+      await connectToDatabase();
+      await ClientSignup.create({ name, email, phone, service, area, time });
+    } catch (dbErr) {
+      console.error('Mongo save error (non-fatal):', dbErr);
+    }
 
     return NextResponse.json({ success: true, message: 'Signup email sent successfully' });
   } catch (error) {

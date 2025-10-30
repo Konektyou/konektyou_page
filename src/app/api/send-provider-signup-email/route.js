@@ -1,18 +1,32 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { appendJsonRecord } from '@/lib/storage';
 
 export async function POST(request) {
   try {
     const { name, email, phone, serviceType, experience, area, businessName, documents, photo } = await request.json();
 
-    // Create transporter using Microsoft 365 SMTP
-    const transporter = nodemailer.createTransporter({
+    // Save provider data to local JSON "DB"
+    await appendJsonRecord('providerSignups.json', {
+      name,
+      email,
+      phone,
+      serviceType,
+      experience,
+      area,
+      businessName,
+      documents,
+      photoName: photo?.name || null
+    });
+
+    // Create transporter using Microsoft 365 SMTP (client-provided credentials)
+    const transporter = nodemailer.createTransport({
       host: 'smtp.office365.com',
       port: 587,
-      secure: false, // true for 465, false for other ports
+      secure: false, // use STARTTLS
       auth: {
-        user: process.env.SMTP_USER, // Andy@Konektly.ca
-        pass: process.env.SMTP_PASSWORD, // Password for Andy@Konektly.ca
+        user: 'hello@konektly.ca',
+        pass: 'Welcome@123',
       },
       tls: {
         ciphers: 'SSLv3'
@@ -21,8 +35,8 @@ export async function POST(request) {
 
     // Email content
     const mailOptions = {
-      from: process.env.SMTP_USER, // Andy@Konektly.ca
-      to: 'mudassar0920@gmail.com', // Changed to send to mudassar0920@gmail.com
+      from: 'hello@konektly.ca',
+      to: ['info@konektly.ca', 'andy@konektly.ca'],
       subject: `New Service Provider Registration - ${name}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -44,10 +58,10 @@ export async function POST(request) {
           <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0;">
             <h4 style="color: #856404; margin-top: 0;">Documents Uploaded:</h4>
             <ul style="color: #856404; margin: 0;">
-              ${documents.map(doc => `<li>${doc}</li>`).join('')}
+              ${(documents || []).map(doc => `<li>${doc}</li>`).join('')}
             </ul>
             <p style="color: #856404; margin: 10px 0 0 0;">
-              <strong>Profile Photo:</strong> ${photo ? photo.name : 'Not uploaded'}
+              <strong>Profile Photo:</strong> ${photo?.name || 'Not uploaded'}
             </p>
           </div>
           

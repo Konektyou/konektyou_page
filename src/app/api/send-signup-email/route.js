@@ -1,18 +1,22 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { appendJsonRecord } from '@/lib/storage';
 
 export async function POST(request) {
   try {
     const { name, email, phone, service, area, time } = await request.json();
 
-    // Create transporter using Microsoft 365 SMTP
-    const transporter = nodemailer.createTransporter({
+    // Save to local JSON "DB"
+    await appendJsonRecord('clientSignups.json', { name, email, phone, service, area, time });
+
+    // Create transporter using Microsoft 365 SMTP (client-provided credentials)
+    const transporter = nodemailer.createTransport({
       host: 'smtp.office365.com',
       port: 587,
-      secure: false, // true for 465, false for other ports
+      secure: false, // use STARTTLS
       auth: {
-        user: process.env.SMTP_USER, // Andy@Konektly.ca
-        pass: process.env.SMTP_PASSWORD, // Password for Andy@Konektly.ca
+        user: 'hello@konektly.ca',
+        pass: 'Welcome@123',
       },
       tls: {
         ciphers: 'SSLv3'
@@ -21,8 +25,8 @@ export async function POST(request) {
 
     // Email content
     const mailOptions = {
-      from: process.env.SMTP_USER, // Andy@Konektly.ca
-      to: 'mudassar0920@gmail.com', // Changed to send to mudassar0920@gmail.com
+      from: 'hello@konektly.ca',
+      to: ['info@konektly.ca', 'andy@konektly.ca'],
       subject: `New User Signup - ${name}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

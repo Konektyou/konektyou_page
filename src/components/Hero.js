@@ -119,7 +119,7 @@ export default function Hero() {
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => handleRoleSelect('client')}
-              className="bg-white/50 backdrop-blur-sm text-black px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white transition-all shadow-lg border border-gray-200 focus:outline-none focus:ring-0"
+              className="cursor-pointer bg-white/50 backdrop-blur-sm text-black px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white transition-all shadow-lg border border-gray-200 focus:outline-none focus:ring-0"
             >
               For Clients
             </motion.button>
@@ -127,7 +127,7 @@ export default function Hero() {
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => handleRoleSelect('business')}
-              className="bg-white/50 backdrop-blur-sm text-black px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white transition-all shadow-lg border border-gray-200 focus:outline-none focus:ring-0"
+              className="cursor-pointer bg-white/50 backdrop-blur-sm text-black px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white transition-all shadow-lg border border-gray-200 focus:outline-none focus:ring-0"
             >
               For Businesses
             </motion.button>
@@ -135,7 +135,7 @@ export default function Hero() {
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => handleRoleSelect('provider')}
-              className="bg-white/50 backdrop-blur-sm text-black px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white transition-all shadow-lg border border-gray-200 focus:outline-none focus:ring-0"
+              className="cursor-pointer bg-white/50 backdrop-blur-sm text-black px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white transition-all shadow-lg border border-gray-200 focus:outline-none focus:ring-0"
             >
               For Service Providers
             </motion.button>

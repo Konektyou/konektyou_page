@@ -1,5 +1,3 @@
-'use server';
-
 import mongoose from 'mongoose';
 
 const ClientSignupSchema = new mongoose.Schema(

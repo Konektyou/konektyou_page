@@ -62,7 +62,7 @@ export default function Businesses() {
             viewport={{ once: true }}
             className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed px-4"
           >
-            Help you need to run your business <br /> instantly without the long hiring process.
+            Reliable help is available in minutes, not weeks. <br /> No hiring process.
           </motion.p>
         </motion.div>
 

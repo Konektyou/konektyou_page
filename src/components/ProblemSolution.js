@@ -83,7 +83,7 @@ export default function ProblemSolution() {
           whileInView={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.6 }}
           viewport={{ once: true }}
-          className="text-center bg-white rounded-2xl sm:rounded-3xl p-8 sm:p-12 lg:p-16 border-2 border-black shadow-xl"
+          className="text-center bg-white rounded-2xl sm:rounded-3xl p-8 sm:p-12 lg:p-16 border-2 border-black/30 shadow-xl"
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}

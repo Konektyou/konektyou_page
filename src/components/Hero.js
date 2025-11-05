@@ -21,8 +21,7 @@ export default function Hero() {
 
   // Animated text sequence
   const textSequence = [
-    'Find nearby talent instantly.',
-    'No waiting. No calling. Just connect.'
+    'Find the help you need near you instantly.'
   ];
 
   // Mock service providers data with Toronto coordinates

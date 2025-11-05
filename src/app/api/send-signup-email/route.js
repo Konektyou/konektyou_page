@@ -21,20 +21,34 @@ export async function POST(request) {
 
     // Send email after successful database save
     try {
-      // Create transporter with GoDaddy email SMTP settings
-      const transporter = nodemailer.createTransport({
-        host: 'smtpout.secureserver.net', // GoDaddy Workspace Email uses Office 365
-        port: 587,
-        secure: false, // false for STARTTLS on port 587
-        auth: {
-          user: 'hello@konektly.ca',
-          pass: 'Thisisit@2025',
-        },
-        tls: {
-          ciphers: 'SSLv3',
-          rejectUnauthorized: false,
-        },
-      });
+      // Get email configuration from environment variables
+      const smtpHost = process.env.SMTP_HOST || 'smtp.hostinger.com';
+      const smtpPort = parseInt(process.env.SMTP_PORT || '465', 10);
+      const smtpUser = process.env.SMTP_USER || 'hello@konektly.ca';
+      const smtpPass = process.env.SMTP_PASS || 'thisisit@2025';
+      
+      // If no password is set, skip email sending
+      if (!smtpPass) {
+        console.warn('SMTP_PASS not configured, skipping email send');
+        // Continue to return success response below
+      } else {
+        // Determine if using SSL (port 465) or TLS (port 587)
+        const useSSL = smtpPort === 465;
+
+        // Create transporter with SMTP settings (supports Hostinger, Office365, etc.)
+        const transporter = nodemailer.createTransport({
+          host: smtpHost,
+          port: smtpPort,
+          secure: useSSL, // true for SSL (port 465), false for STARTTLS (port 587)
+          auth: {
+            user: smtpUser,
+            pass: smtpPass,
+          },
+          tls: {
+            ciphers: 'SSLv3',
+            rejectUnauthorized: false,
+          },
+        });
 
       // Format time display
       const timeDisplay = {
@@ -91,12 +105,13 @@ export async function POST(request) {
         `,
       };
 
-      // Send email
-      const info = await transporter.sendMail(mailOptions);
-      console.log('Email sent successfully!', {
-        messageId: info.messageId,
-        to: 'konektdemo@gmail.com',
-      });
+        // Send email
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Email sent successfully!', {
+          messageId: info.messageId,
+          to: 'konektdemo@gmail.com',
+        });
+      }
     } catch (emailError) {
       // Log email error but don't fail the request
       console.error('Error sending email:', {

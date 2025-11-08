@@ -115,13 +115,12 @@ export async function POST(request) {
         `,
       };
 
-        // Send email
-        const info = await transporter.sendMail(mailOptions);
-        console.log('Email sent successfully!', {
-          messageId: info.messageId,
-          to: 'konektdemo@gmail.com',
-        });
-      }
+      // Send email
+      const info = await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully!', {
+        messageId: info.messageId,
+        to: 'konektdemo@gmail.com',
+      });
     } catch (emailError) {
       // Log email error but don't fail the request
       console.error('Error sending email:', {

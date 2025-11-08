@@ -1,10 +1,16 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { FiAlertTriangle, FiDollarSign } from 'react-icons/fi';
 import { FaCheck } from 'react-icons/fa';
 
 export default function Businesses() {
+  const router = useRouter();
+
+  const handleCardClick = () => {
+    router.push('/provider-signup');
+  };
   return (
     (<motion.section
       initial={{ opacity: 0 }}
@@ -87,15 +93,16 @@ export default function Businesses() {
               whileInView={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.7 }}
               viewport={{ once: true }}
-              className="space-y-4 sm:space-y-6"
+              className="space-y-4 sm:space-y-6 cursor-pointer group"
+              onClick={handleCardClick}
             >
-              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-black flex items-center">
-                <div className="w-6 h-6 sm:w-8 sm:h-8 mr-3 text-red-500 border-3 border-red-500 rounded-full p-1 flex items-center justify-center">
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-black flex items-center group-hover:text-black transition-colors">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 mr-3 text-red-500 border-3 border-red-500 rounded-full p-1 flex items-center justify-center group-hover:bg-red-100 transition-colors">
                   <FiAlertTriangle className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 Emergency Coverage
               </h3>
-              <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed">
+              <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed group-hover:text-gray-800 transition-colors">
                 Fill critical shifts instantly when staff call in sick.
               </p>
             </motion.div>
@@ -105,15 +112,16 @@ export default function Businesses() {
               whileInView={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.8 }}
               viewport={{ once: true }}
-              className="space-y-4 sm:space-y-6"
+              className="space-y-4 sm:space-y-6 cursor-pointer group"
+              onClick={handleCardClick}
             >
-              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-black flex items-center">
-                <div className="w-6 h-6 sm:w-8 sm:h-8 mr-3 text-green-500 border-3 border-green-500 rounded-full p-1 flex items-center justify-center">
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-black flex items-center group-hover:text-black transition-colors">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 mr-3 text-green-500 border-3 border-green-500 rounded-full p-1 flex items-center justify-center group-hover:bg-green-100 transition-colors">
                   <FiDollarSign className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 Protect Revenue
               </h3>
-              <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed">
+              <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed group-hover:text-gray-800 transition-colors">
                 Never turn away customers due to staffing shortages.
               </p>
             </motion.div>
@@ -123,15 +131,16 @@ export default function Businesses() {
               whileInView={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.9 }}
               viewport={{ once: true }}
-              className="space-y-4 sm:space-y-6"
+              className="space-y-4 sm:space-y-6 cursor-pointer group"
+              onClick={handleCardClick}
             >
-              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-black flex items-center">
-                <div className="w-6 h-6 sm:w-8 sm:h-8 mr-3 text-blue-500 border-3 border-blue-500 rounded-full p-1 flex items-center justify-center">
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-black flex items-center group-hover:text-black transition-colors">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 mr-3 text-blue-500 border-3 border-blue-500 rounded-full p-1 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
                   <FaCheck className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 Verified Professionals
               </h3>
-              <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed">
+              <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed group-hover:text-gray-800 transition-colors">
                 Pre-screened, background-checked professionals ready to maintain your standards.
               </p>
             </motion.div>

@@ -27,6 +27,13 @@ export async function POST(request) {
       const smtpUser = process.env.SMTP_USER || 'hello@konektly.ca';
       const smtpPass = process.env.SMTP_PASS || 'thisisit@2025';
       
+      console.log('Email configuration:', {
+        host: smtpHost,
+        port: smtpPort,
+        user: smtpUser,
+        hasPassword: !!smtpPass
+      });
+      
       // If no password is set, skip email sending
       if (!smtpPass) {
         console.warn('SMTP_PASS not configured, skipping email send');
@@ -48,7 +55,22 @@ export async function POST(request) {
             ciphers: 'SSLv3',
             rejectUnauthorized: false,
           },
+          debug: true, // Enable debug output
+          logger: true, // Enable logging
         });
+
+        // Verify connection before sending
+        try {
+          await transporter.verify();
+          console.log('SMTP connection verified successfully');
+        } catch (verifyError) {
+          console.error('SMTP verification failed:', {
+            message: verifyError?.message,
+            code: verifyError?.code,
+            response: verifyError?.response,
+          });
+          throw verifyError;
+        }
 
       // Format time display
       const timeDisplay = {

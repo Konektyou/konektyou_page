@@ -21,65 +21,20 @@ export async function POST(request) {
 
     // Send email after successful database save
     try {
-      // Get email configuration from environment variables - GODADDY
-      const smtpHost = process.env.SMTP_HOST || 'smtpout.secureserver.net';
-      const smtpPort = parseInt(process.env.SMTP_PORT || '587', 10);
-      const smtpUser = process.env.SMTP_USER || 'hello@konektly.ca';
-      const smtpPass = process.env.SMTP_PASS || 'thisisit@2025';
-      
-      // Ensure we're using GoDaddy, not Outlook or Hostinger
-      const finalHost = smtpHost.includes('secureserver') || smtpHost.includes('godaddy') 
-        ? smtpHost 
-        : 'smtpout.secureserver.net';
-      
-      console.log('Email configuration:', {
-        host: finalHost,
-        port: smtpPort,
-        user: smtpUser,
-        hasPassword: !!smtpPass,
-        usingGoDaddy: finalHost.includes('secureserver') || finalHost.includes('godaddy')
+      // Create transporter with GoDaddy Workspace Email SMTP settings
+      const transporter = nodemailer.createTransport({
+        host: 'smtpout.secureserver.net', // GoDaddy Workspace Email
+        port: 587,
+        secure: false, // false for STARTTLS on port 587
+        auth: {
+          user: 'hello@konektly.ca',
+          pass: 'Thisisit@2025',
+        },
+        tls: {
+          ciphers: 'SSLv3',
+          rejectUnauthorized: false,
+        },
       });
-      
-      // If no password is set, skip email sending
-      if (!smtpPass) {
-        console.warn('SMTP_PASS not configured, skipping email send');
-        // Continue to return success response below
-      } else {
-        // Determine if using SSL (port 465) or TLS (port 587)
-        const useSSL = smtpPort === 465;
-
-        // Create transporter with GoDaddy SMTP settings
-        const transporter = nodemailer.createTransport({
-          host: finalHost,
-          port: smtpPort,
-          secure: useSSL, // true for SSL (port 465), false for STARTTLS (port 587)
-          auth: {
-            user: smtpUser,
-            pass: smtpPass,
-          },
-          // GoDaddy-specific TLS configuration
-          tls: {
-            rejectUnauthorized: false, // Allow self-signed certificates
-            ciphers: 'SSLv3',
-          },
-          // Connection timeout
-          connectionTimeout: 10000, // 10 seconds
-          greetingTimeout: 10000,
-          socketTimeout: 10000,
-          debug: true, // Enable debug output
-          logger: true, // Enable logging
-        });
-
-        // Try to verify connection (non-blocking - continue even if it fails)
-        transporter.verify().then(() => {
-          console.log('SMTP connection verified successfully');
-        }).catch((verifyError) => {
-          console.warn('SMTP verification warning (continuing anyway):', {
-            message: verifyError?.message,
-            code: verifyError?.code,
-          });
-          // Don't throw - continue to try sending email
-        });
 
       // Format time display
       const timeDisplay = {
@@ -136,13 +91,12 @@ export async function POST(request) {
         `,
       };
 
-        // Send email
-        const info = await transporter.sendMail(mailOptions);
-        console.log('Email sent successfully!', {
-          messageId: info.messageId,
-          to: 'konektdemo@gmail.com',
-        });
-      }
+      // Send email
+      const info = await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully!', {
+        messageId: info.messageId,
+        to: 'konektdemo@gmail.com',
+      });
     } catch (emailError) {
       // Log email error but don't fail the request
       console.error('Error sending email:', {

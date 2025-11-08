@@ -21,17 +21,23 @@ export async function POST(request) {
 
     // Send email after successful database save
     try {
-      // Get email configuration from environment variables
-      const smtpHost = process.env.SMTP_HOST || 'smtp.hostinger.com';
-      const smtpPort = parseInt(process.env.SMTP_PORT || '465', 10);
+      // Get email configuration from environment variables - GODADDY
+      const smtpHost = process.env.SMTP_HOST || 'smtpout.secureserver.net';
+      const smtpPort = parseInt(process.env.SMTP_PORT || '587', 10);
       const smtpUser = process.env.SMTP_USER || 'hello@konektly.ca';
       const smtpPass = process.env.SMTP_PASS || 'thisisit@2025';
       
+      // Ensure we're using GoDaddy, not Outlook or Hostinger
+      const finalHost = smtpHost.includes('secureserver') || smtpHost.includes('godaddy') 
+        ? smtpHost 
+        : 'smtpout.secureserver.net';
+      
       console.log('Email configuration:', {
-        host: smtpHost,
+        host: finalHost,
         port: smtpPort,
         user: smtpUser,
-        hasPassword: !!smtpPass
+        hasPassword: !!smtpPass,
+        usingGoDaddy: finalHost.includes('secureserver') || finalHost.includes('godaddy')
       });
       
       // If no password is set, skip email sending
@@ -42,35 +48,38 @@ export async function POST(request) {
         // Determine if using SSL (port 465) or TLS (port 587)
         const useSSL = smtpPort === 465;
 
-        // Create transporter with SMTP settings (supports Hostinger, Office365, etc.)
+        // Create transporter with GoDaddy SMTP settings
         const transporter = nodemailer.createTransport({
-          host: smtpHost,
+          host: finalHost,
           port: smtpPort,
           secure: useSSL, // true for SSL (port 465), false for STARTTLS (port 587)
           auth: {
             user: smtpUser,
             pass: smtpPass,
           },
+          // GoDaddy-specific TLS configuration
           tls: {
+            rejectUnauthorized: false, // Allow self-signed certificates
             ciphers: 'SSLv3',
-            rejectUnauthorized: false,
           },
+          // Connection timeout
+          connectionTimeout: 10000, // 10 seconds
+          greetingTimeout: 10000,
+          socketTimeout: 10000,
           debug: true, // Enable debug output
           logger: true, // Enable logging
         });
 
-        // Verify connection before sending
-        try {
-          await transporter.verify();
+        // Try to verify connection (non-blocking - continue even if it fails)
+        transporter.verify().then(() => {
           console.log('SMTP connection verified successfully');
-        } catch (verifyError) {
-          console.error('SMTP verification failed:', {
+        }).catch((verifyError) => {
+          console.warn('SMTP verification warning (continuing anyway):', {
             message: verifyError?.message,
             code: verifyError?.code,
-            response: verifyError?.response,
           });
-          throw verifyError;
-        }
+          // Don't throw - continue to try sending email
+        });
 
       // Format time display
       const timeDisplay = {

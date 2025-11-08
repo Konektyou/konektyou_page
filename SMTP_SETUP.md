@@ -1,32 +1,18 @@
-# SMTP Email Configuration Guide
+# SMTP Email Configuration Guide - GoDaddy
 
-## Issue
-The error `535 5.7.139 Authentication unsuccessful, SmtpClientAuthentication is disabled for the Tenant` indicates that SMTP authentication is disabled in your Microsoft 365/Outlook tenant.
+## Domain: GoDaddy
+Your domain `konektly.ca` is hosted on GoDaddy, so we're using GoDaddy Workspace Email SMTP settings.
 
-## Solutions
+## GoDaddy SMTP Settings
 
-### Option 1: Enable SMTP AUTH in Microsoft 365 (Recommended)
-1. Sign in to the [Microsoft 365 admin center](https://admin.microsoft.com)
-2. Go to **Settings** > **Org settings** > **Mail**
-3. Find **SMTP AUTH** and enable it for your tenant
-4. Or use PowerShell:
-   ```powershell
-   Set-TransportConfig -SmtpClientAuthenticationDisabled $false
-   ```
+### Standard Configuration
+GoDaddy Workspace Email uses these SMTP settings:
 
-### Option 2: Use App Password (Microsoft 365)
-If you have 2FA enabled, you'll need to use an App Password instead of your regular password:
-1. Go to [Microsoft Account Security](https://account.microsoft.com/security)
-2. Enable 2FA if not already enabled
-3. Go to **Security** > **Advanced security options** > **App passwords**
-4. Create a new app password for "Mail"
-5. Use this app password in your `SMTP_PASS` environment variable
-
-### Option 3: Use GoDaddy Workspace Email (Alternative)
-If you prefer to use GoDaddy's SMTP server instead:
-1. Set `SMTP_HOST=smtpout.secureserver.net` in your `.env` file
-2. Keep `SMTP_PORT=587`
-3. Use your GoDaddy email credentials
+- **SMTP Host:** `smtpout.secureserver.net`
+- **Port:** `587` (TLS/STARTTLS) - Recommended
+- **Alternative Port:** `465` (SSL) - If 587 doesn't work
+- **Username:** Your full email address (e.g., `hello@konektly.ca`)
+- **Password:** Your GoDaddy email account password
 
 ## Environment Variables
 
@@ -36,11 +22,21 @@ Create a `.env` file in the root directory with:
 # Site Configuration
 NEXT_PUBLIC_SITE_URL=https://konektly.ca
 
-# SMTP Email Configuration
-SMTP_HOST=smtp.office365.com
+# SMTP Email Configuration - GoDaddy
+SMTP_HOST=smtpout.secureserver.net
 SMTP_PORT=587
 SMTP_USER=hello@konektly.ca
-SMTP_PASS=your_password_or_app_password_here
+SMTP_PASS=your_godaddy_email_password_here
+```
+
+### Alternative: Port 465 (SSL)
+If port 587 doesn't work, try port 465:
+
+```env
+SMTP_HOST=smtpout.secureserver.net
+SMTP_PORT=465
+SMTP_USER=hello@konektly.ca
+SMTP_PASS=your_godaddy_email_password_here
 ```
 
 ## After Configuration
@@ -57,8 +53,42 @@ SMTP_PASS=your_password_or_app_password_here
    pm2 logs konektyo
    ```
 
+## Troubleshooting
+
+### If emails are not sending:
+
+1. **Verify GoDaddy Email Account:**
+   - Log into your GoDaddy account
+   - Go to Workspace Email settings
+   - Make sure the email account `hello@konektly.ca` exists and is active
+   - Verify the password is correct
+
+2. **Check Port Settings:**
+   - Try port 587 first (TLS)
+   - If that doesn't work, try port 465 (SSL)
+   - Update `SMTP_PORT` in `.env` and restart PM2
+
+3. **Check Server Logs:**
+   ```bash
+   pm2 logs konektyou_page --lines 100
+   ```
+   Look for:
+   - `host: smtpout.secureserver.net` (should show GoDaddy, not Outlook)
+   - `usingGoDaddy: true`
+   - Any error messages
+
+4. **Verify Environment Variables:**
+   Make sure your `.env` file is in the project root and contains:
+   ```env
+   SMTP_HOST=smtpout.secureserver.net
+   SMTP_PORT=587
+   SMTP_USER=hello@konektly.ca
+   SMTP_PASS=your_actual_password
+   ```
+
 ## Notes
 - The app will continue to work even if email fails (signups are still saved to the database)
 - Email errors are logged but don't break the signup process
 - Make sure your `.env` file is in `.gitignore` (already configured)
+- The code now **forces GoDaddy** - it will use `smtpout.secureserver.net` even if environment variables point elsewhere
 

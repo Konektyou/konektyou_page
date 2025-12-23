@@ -1,11 +1,35 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { FiUser } from 'react-icons/fi';
+import { isProviderAuthenticated } from '@/lib/providerAuth';
+import { isClientAuthenticated } from '@/lib/clientAuth';
+import { isBusinessAuthenticated } from '@/lib/businessAuth';
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userType, setUserType] = useState(null);
+
+  useEffect(() => {
+    // Check if user is logged in
+    if (isProviderAuthenticated()) {
+      setIsLoggedIn(true);
+      setUserType('provider');
+    } else if (isClientAuthenticated()) {
+      setIsLoggedIn(true);
+      setUserType('client');
+    } else if (isBusinessAuthenticated()) {
+      setIsLoggedIn(true);
+      setUserType('business');
+    } else {
+      setIsLoggedIn(false);
+      setUserType(null);
+    }
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -13,6 +37,13 @@ export default function Navigation() {
 
   const closeMenu = () => {
     setIsMenuOpen(false);
+  };
+
+  const getDashboardLink = () => {
+    if (userType === 'provider') return '/provider';
+    if (userType === 'client') return '/client';
+    if (userType === 'business') return '/business';
+    return '#';
   };
 
   return (
@@ -83,6 +114,37 @@ export default function Navigation() {
                 >
                   Contact
                 </motion.a>
+                {/* Login/Register Buttons */}
+                {isLoggedIn ? (
+                  <motion.a
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    href={getDashboardLink()}
+                    className="bg-black text-white hover:bg-gray-800 px-3 lg:px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-2"
+                  >
+                    <FiUser className="w-4 h-4" />
+                    Dashboard
+                  </motion.a>
+                ) : (
+                  <>
+                    <motion.a
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      href="/login"
+                      className="border border-gray-700 text-gray-700 hover:bg-gray-700 hover:text-white px-3 lg:px-4 py-2 text-sm font-medium rounded-lg transition-colors"
+                    >
+                      Login
+                    </motion.a>
+                    <motion.a
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      href="/register"
+                      className="bg-black text-white hover:bg-gray-800 px-3 lg:px-4 py-2 text-sm font-medium rounded-lg transition-colors"
+                    >
+                      Register
+                    </motion.a>
+                  </>
+                )}
               </div>
             </motion.div>
             {/* Mobile menu button */}
@@ -117,7 +179,7 @@ export default function Navigation() {
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            initial={{ opacity: 0 }} 
+            initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
@@ -203,12 +265,47 @@ export default function Navigation() {
                       Contact
                     </motion.a>
                   </nav>
+
+                  {/* Mobile Auth Section */}
+                  <div className="mt-8 pt-8 border-t border-gray-200">
+                    {isLoggedIn ? (
+                      <motion.a
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        href={getDashboardLink()}
+                        onClick={closeMenu}
+                        className="block w-full text-center bg-black text-white hover:bg-gray-800 px-6 py-3 text-lg font-medium rounded-lg transition-colors"
+                      >
+                        Go to Dashboard
+                      </motion.a>
+                    ) : (
+                      <>
+                        <motion.a
+                          whileHover={{ x: 10 }}
+                          href="/login"
+                          onClick={closeMenu}
+                          className="block text-lg font-medium text-gray-700 hover:text-black transition-colors mb-4"
+                        >
+                          Login
+                        </motion.a>
+                        <motion.a
+                          whileHover={{ x: 10 }}
+                          href="/register"
+                          onClick={closeMenu}
+                          className="block text-lg font-medium text-gray-700 hover:text-black transition-colors"
+                        >
+                          Sign Up
+                        </motion.a>
+                      </>
+                    )}
+                  </div>
                 </motion.div>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+
     </>
   );
 }

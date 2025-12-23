@@ -38,13 +38,39 @@ body {
   background: #555;
 }
 
-/* Focus styles for accessibility */
+/* Remove default focus outlines globally */
+*:focus {
+  outline: none !important;
+}
+
 button:focus,
 input:focus,
 textarea:focus,
-select:focus {
-  outline: 2px solid #000;
-  outline-offset: 2px;
+select:focus,
+a:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove focus ring from Tailwind */
+*:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Cursor pointer for all interactive elements */
+button,
+a,
+select,
+[role="button"],
+[onclick],
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="checkbox"],
+input[type="radio"],
+label[for] {
+  cursor: pointer;
 }
 
 /* button {

@@ -64,12 +64,8 @@ export default function Hero() {
   }, []);
 
   const handleRoleSelect = (role) => {
-    // Redirect immediately based on role
-    if (role === 'provider') {
-      window.location.href = '/provider-signup';
-    } else {
-      window.location.href = '/signup';
-    }
+    // Redirect to register page with role parameter
+    window.location.href = `/register?role=${role}`;
   };
 
   // Toronto area coordinates - centered higher to avoid text overlap

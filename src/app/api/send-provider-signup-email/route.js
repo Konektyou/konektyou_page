@@ -48,7 +48,7 @@ export async function POST(request) {
         secure: false, // false for STARTTLS on port 587
         auth: {
           user: 'hello@konektly.ca',
-          pass: 'Thisisit@2025',
+          pass: 'thisisit@2025',
         },
         tls: {
           ciphers: 'SSLv3',

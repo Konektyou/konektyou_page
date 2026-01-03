@@ -52,17 +52,13 @@ export async function POST(request, { params }) {
     booking.status = 'confirmed';
     await booking.save();
 
-    // Create payment record
-    await Payment.create({
-      providerId: booking.providerId,
-      bookingId: booking._id,
-      serviceId: booking.serviceId,
-      amount: booking.amount,
-      status: 'completed',
-      paymentType: 'earned',
-      description: `Payment for booking ${id}`,
-      completedAt: new Date()
-    });
+    // IMPORTANT: Payment record is NOT created here
+    // Payment record will be created when admin releases the payment (7 days after completion)
+    // The payment amount will be calculated as: booking.amount - (booking.amount * commission_rate)
+    // This ensures:
+    // - Client pays: provider's set price (booking.amount)
+    // - Provider receives: provider's set price - admin commission
+    // - Admin gets: provider's set price × commission rate
 
     // Send email notification to client
     try {

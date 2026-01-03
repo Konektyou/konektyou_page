@@ -22,7 +22,7 @@ export default function ProvidersPage() {
     
     // Refresh bookings when page becomes visible (e.g., returning from booking page)
     const handleVisibilityChange = () => {
-      if (!document.hidden) {
+      if (!document.hidden) { 
         fetchClientBookings();
       }
     };

@@ -5,9 +5,7 @@ import Payment from '@/models/Payment';
 import Client from '@/models/Client';
 import Provider from '@/models/Provider';
 import Service from '@/models/Service';
-
-// Admin commission rate (e.g., 15%)
-const ADMIN_COMMISSION_RATE = 0.15;
+import AdminSettings from '@/models/AdminSettings';
 
 export async function GET(request) {
   try {
@@ -28,11 +26,24 @@ export async function GET(request) {
       .populate('serviceId', 'name description')
       .sort({ createdAt: -1 });
 
+    // Fetch admin settings for commission rate
+    const adminSettings = await AdminSettings.getSettings();
+    const commissionRate = adminSettings.commissionRate / 100; // Convert percentage to decimal
+
     // Fetch all payments
     const payments = await Payment.find({})
       .populate('providerId', 'name')
       .populate('bookingId')
       .sort({ createdAt: -1 });
+
+    // Helper function to check if payment can be released (7 days after completion)
+    const canReleasePayment = (completedAt) => {
+      if (!completedAt) return false;
+      const completedDate = new Date(completedAt);
+      const today = new Date();
+      const daysDiff = Math.floor((today - completedDate) / (1000 * 60 * 60 * 24));
+      return daysDiff >= 7;
+    };
 
     // Format transactions from bookings
     const transactions = bookings.map(booking => {
@@ -41,14 +52,23 @@ export async function GET(request) {
       const provider = bookingObj.providerId;
       const service = bookingObj.serviceId;
 
-      // Calculate admin commission (15% of booking amount)
-      const adminCommission = bookingObj.amount * ADMIN_COMMISSION_RATE;
+      // Calculate admin commission and provider earnings
+      // bookingObj.amount = provider's set price (what client paid)
+      // Commission is deducted from provider earnings, NOT added to client price
+      const adminCommission = bookingObj.amount * commissionRate;
       const providerEarnings = bookingObj.amount - adminCommission;
+
+      // Check if payment can be released
+      const eligibleForRelease = bookingObj.status === 'completed' && 
+                                 bookingObj.paymentStatus === 'paid' &&
+                                 canReleasePayment(bookingObj.completedAt);
 
       // Find related payment record
       const relatedPayment = payments.find(p => 
         p.bookingId && p.bookingId.toString() === bookingObj._id.toString()
       );
+
+      const isPaymentReleased = relatedPayment?.status === 'completed';
 
       return {
         id: bookingObj._id.toString(),
@@ -74,7 +94,10 @@ export async function GET(request) {
         createdAt: bookingObj.createdAt,
         completedAt: bookingObj.completedAt,
         cancelledAt: bookingObj.cancelledAt,
-        paymentReleasedAt: relatedPayment?.completedAt || bookingObj.completedAt || null,
+        paymentReleasedAt: relatedPayment?.completedAt || null,
+        isPaymentReleased: isPaymentReleased,
+        eligibleForRelease: eligibleForRelease && !isPaymentReleased,
+        commissionRate: adminSettings.commissionRate,
         stripePaymentId: bookingObj.stripePaymentId || null,
         paymentIntentId: bookingObj.paymentIntentId || null
       };
@@ -116,6 +139,7 @@ export async function GET(request) {
     );
   }
 }
+
 
 
 

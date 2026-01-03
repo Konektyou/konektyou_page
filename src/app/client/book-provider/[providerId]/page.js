@@ -219,8 +219,12 @@ export default function BookProviderPage() {
     }
   };
 
+  // Calculate booking amount based on provider's set price
+  // Client pays exactly this amount - commission is NOT added to the price
+  // Commission will be deducted from provider earnings when admin releases payment
   const calculateAmount = () => {
     if (!selectedService) return 0;
+    // Provider's base price × duration = total amount client pays
     return selectedService.basePrice * bookingData.duration;
   };
 

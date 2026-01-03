@@ -61,6 +61,9 @@ export async function POST(request) {
     }
 
     // Create booking
+    // IMPORTANT: The 'amount' here is the provider's set price (e.g., $10/hour × duration)
+    // Client pays exactly this amount. Commission is NOT added to the client's price.
+    // Commission will be deducted from provider earnings when admin releases the payment.
     const booking = await Booking.create({
       clientId,
       providerId,
@@ -69,7 +72,7 @@ export async function POST(request) {
       endTime: new Date(endTime),
       duration,
       workLocation,
-      amount,
+      amount, // This is the provider's price - client pays exactly this amount
       status: 'pending',
       paymentStatus: 'pending'
     });
@@ -81,8 +84,10 @@ export async function POST(request) {
     try {
       const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_51MAu7gI7BEvOC2zJTYQxB3JsfS5rINOJylLzJuhWTG3p4WAvTRQ1us6Fof8Z2UZEi15rxmAyXTbNnny1stNz4d7200w9BfzrOR');
       
+      // Create Stripe payment intent for the exact booking amount (provider's price)
+      // Commission is NOT added here - client pays provider's set price only
       const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(amount * 100), // Convert to cents
+        amount: Math.round(amount * 100), // Convert to cents - this is provider's price
         currency: 'cad',
         metadata: {
           bookingId: booking._id.toString(),

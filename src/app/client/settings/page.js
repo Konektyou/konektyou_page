@@ -23,7 +23,7 @@ export default function ClientSettingsPage() {
         <p className="text-gray-600 mt-1">Manage your account settings and preferences</p>
       </div>
 
-      {/* Notifications */}
+      {/* Notifications */} 
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
           <FiBell className="w-5 h-5" />

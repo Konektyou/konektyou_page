@@ -1,15 +1,31 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Optimize build performance
-  swcMinify: true,
-  
-  // Increase build memory limit
+  // Optimize package imports (reduces bundle size)
   experimental: {
-    // Optimize package imports
     optimizePackageImports: ['react-icons', 'framer-motion'],
   },
   
-  // Webpack configuration for better build performance
+  // Compiler options
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
+  },
+  
+  // Disable source maps in production for faster builds
+  productionBrowserSourceMaps: false,
+  
+  // Optimize images
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+  },
+  
+  // Add empty turbopack config to silence warning when using webpack
+  turbopack: {},
+  
+  // Webpack configuration for better build performance (when using --webpack flag)
   webpack: (config, { isServer }) => {
     // Optimize bundle size
     if (!isServer) {
@@ -44,26 +60,6 @@ const nextConfig = {
     }
     
     return config;
-  },
-  
-  // Compiler options
-  compiler: {
-    removeConsole: process.env.NODE_ENV === 'production' ? {
-      exclude: ['error', 'warn'],
-    } : false,
-  },
-  
-  // Output configuration - comment out if using custom server
-  // output: 'standalone',
-  
-  // Disable source maps in production for faster builds
-  productionBrowserSourceMaps: false,
-  
-  // Optimize images
-  images: {
-    formats: ['image/avif', 'image/webp'],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
 };
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { FiMail, FiLock, FiUser, FiAlertCircle, FiLoader, FiCheck, FiEye, FiEyeOff, FiArrowLeft } from 'react-icons/fi';
@@ -8,7 +8,7 @@ import { setProviderAuth } from '@/lib/providerAuth';
 import { setClientAuth } from '@/lib/clientAuth';
 import { setBusinessAuth } from '@/lib/businessAuth';
 
-export default function RegisterPage() {
+function RegisterContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const roleFromUrl = searchParams?.get('role');
@@ -611,3 +611,17 @@ export default function RegisterPage() {
   );
 }
 
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <FiLoader className="w-8 h-8 animate-spin mx-auto text-gray-600 mb-4" />
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <RegisterContent />
+    </Suspense>
+  );
+}

@@ -25,37 +25,16 @@ const nextConfig = {
   // Add empty turbopack config to silence warning when using webpack
   turbopack: {},
   
-  // Webpack configuration for better build performance (when using --webpack flag)
+  // Webpack configuration for better build performance
   webpack: (config, { isServer }) => {
-    // Optimize bundle size
+    // Exclude server-only modules from client bundles
     if (!isServer) {
-      config.optimization = {
-        ...config.optimization,
-        moduleIds: 'deterministic',
-        runtimeChunk: 'single',
-        splitChunks: {
-          chunks: 'all',
-          cacheGroups: {
-            default: false,
-            vendors: false,
-            // Vendor chunk
-            vendor: {
-              name: 'vendor',
-              chunks: 'all',
-              test: /node_modules/,
-              priority: 20,
-            },
-            // Common chunk
-            common: {
-              name: 'common',
-              minChunks: 2,
-              chunks: 'all',
-              priority: 10,
-              reuseExistingChunk: true,
-              enforce: true,
-            },
-          },
-        },
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        mongoose: false,
       };
     }
     

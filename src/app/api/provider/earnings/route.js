@@ -26,11 +26,12 @@ export async function GET(request) {
     const commissionRate = adminSettings.commissionRate / 100; // Convert percentage to decimal
 
     // Helper function to calculate provider earnings after commission
-    // bookingAmount = provider's set price (what client paid)
-    // Commission is deducted from provider earnings, NOT added to client price
-    const calculateProviderEarnings = (bookingAmount) => {
-      const adminCommission = bookingAmount * commissionRate;
-      return bookingAmount - adminCommission;
+    // bookingAmount = provider's base price (before tax) - use baseAmount if available
+    // Commission is calculated on base price, NOT on total amount with tax
+    const calculateProviderEarnings = (booking) => {
+      const baseAmount = booking.baseAmount || booking.amount; // Use baseAmount if available
+      const adminCommission = baseAmount * commissionRate;
+      return baseAmount - adminCommission;
     };
 
     // Fetch all payments for this provider
@@ -59,7 +60,7 @@ export async function GET(request) {
           return sum + (releasedPayment.amount || 0);
         }
         // Otherwise calculate after commission
-        return sum + calculateProviderEarnings(b.amount || 0);
+        return sum + calculateProviderEarnings(b);
       }, 0);
 
     // For completed bookings, use Payment records if released, otherwise calculate after commission
@@ -72,12 +73,12 @@ export async function GET(request) {
         return sum + (releasedPayment.amount || 0);
       }
       // Otherwise calculate after commission
-      return sum + calculateProviderEarnings(b.amount || 0);
+      return sum + calculateProviderEarnings(b);
     }, 0);
 
     const cancelledEarnings = cancelledBookings
       .filter(b => b.paymentStatus === 'paid')
-      .reduce((sum, b) => sum + calculateProviderEarnings(b.amount || 0), 0);
+      .reduce((sum, b) => sum + calculateProviderEarnings(b), 0);
 
     const totalEarnings = completedEarnings;
 
@@ -95,7 +96,7 @@ export async function GET(request) {
       // Use released payment amount if available, otherwise calculate after commission
       const providerAmount = releasedPayment 
         ? (releasedPayment.amount || 0)
-        : calculateProviderEarnings(bookingObj.amount || 0);
+        : calculateProviderEarnings(bookingObj);
 
       return {
         id: bookingObj._id.toString(),

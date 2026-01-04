@@ -61,9 +61,13 @@ export async function POST(request) {
     const serviceType = formData.get('serviceType');
     const experience = formData.get('experience');
     const businessName = formData.get('businessName') || '';
+    
+    // Location coordinates
+    const latitude = formData.get('latitude');
+    const longitude = formData.get('longitude');
 
-    // Validate required fields
-    if (!name || !phone || !city || !province || !serviceType || !experience) {
+    // Validate required fields (province is now optional)
+    if (!name || !phone || !city || !serviceType || !experience) {
       return NextResponse.json(
         { success: false, message: 'All required fields must be filled' },
         { status: 400 }
@@ -140,13 +144,21 @@ export async function POST(request) {
       name,
       phone,
       city,
-      province,
+      province: province || '', // Province is optional
       serviceType,
       experience,
       businessName,
       profileStatus: 'PENDING_REVIEW',
       verificationStatus: 'PENDING'
     };
+    
+    // Add location coordinates if provided
+    if (latitude && longitude) {
+      updateData.location = {
+        latitude: parseFloat(latitude),
+        longitude: parseFloat(longitude)
+      };
+    }
 
     if (photoPath) {
       updateData.photoPath = photoPath;

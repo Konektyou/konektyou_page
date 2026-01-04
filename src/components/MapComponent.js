@@ -1,20 +1,40 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-export default function MapComponent({ activeProviders, torontoCenter }) {
+// Component to update map center when user location changes
+function MapCenter({ center, zoom }) {
+  const map = useMap();
+  useEffect(() => {
+    if (center) {
+      map.setView(center, zoom || 12);
+    }
+  }, [center, zoom, map]);
+  return null;
+}
+
+export default function MapComponent({ 
+  activeProviders = [], 
+  torontoCenter = [43.6532, -79.3832],
+  userLocation = null,
+  serviceRange = 10,
+  onProviderClick = null
+}) {
   const [isClient, setIsClient] = useState(false);
   const [isMapReady, setIsMapReady] = useState(false);
+  
+  // Use user location as center if available, otherwise use torontoCenter
+  const mapCenter = userLocation ? [userLocation.lat, userLocation.lng] : torontoCenter;
 
   useEffect(() => {
-    // Ensure we're on the client side
-    if (typeof window !== 'undefined') {
-      setIsClient(true);
-      
-      // Fix for default markers in react-leaflet
+    // Only run on client side
+    setIsClient(true);
+    
+    // Fix for default markers in react-leaflet
+    if (typeof window !== 'undefined' && typeof L !== 'undefined') {
       delete L.Icon.Default.prototype._getIconUrl;
       L.Icon.Default.mergeOptions({
         iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -32,7 +52,7 @@ export default function MapComponent({ activeProviders, torontoCenter }) {
   }, []);
 
   // Modern 3D marker icon for service providers
-  const customIcon = isClient ? new L.Icon({
+  const customIcon = isClient && typeof window !== 'undefined' && typeof L !== 'undefined' ? new L.Icon({
     iconUrl: 'data:image/svg+xml;base64,' + btoa(`
       <svg width="80" height="100" viewBox="0 0 80 100" fill="none" xmlns="http://www.w3.org/2000/svg">
         <!-- Drop shadow -->
@@ -81,18 +101,10 @@ export default function MapComponent({ activeProviders, torontoCenter }) {
     popupAnchor: [0, -90],
   }) : null;
 
-  if (!isClient || !isMapReady) {
+  // Always return consistent markup to avoid hydration issues
+  if (!isClient || !isMapReady || typeof window === 'undefined') {
     return (
-      <div className="h-full w-full bg-gray-100 flex items-center justify-center">
-        <div className="text-gray-500">Loading map...</div>
-      </div>
-    );
-  }
-
-  // Additional check to ensure window is available
-  if (typeof window === 'undefined') {
-    return (
-      <div className="h-full w-full bg-gray-100 flex items-center justify-center">
+      <div className="h-full w-full bg-gray-100 flex items-center justify-center" suppressHydrationWarning>
         <div className="text-gray-500">Loading map...</div>
       </div>
     );
@@ -121,13 +133,14 @@ export default function MapComponent({ activeProviders, torontoCenter }) {
         }
       `}</style>
       <MapContainer
-        center={torontoCenter}
-        zoom={12}
+        center={mapCenter}
+        zoom={userLocation ? 12 : 12}
         style={{ height: '100%', width: '100%', background: '#f8fafc' }}
         className="rounded-2xl"
-        zoomControl={false}
+        zoomControl={true}
         attributionControl={false}
       >
+      <MapCenter center={mapCenter} zoom={userLocation ? 12 : 12} />
       <TileLayer
         attribution=""
         url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
@@ -135,69 +148,61 @@ export default function MapComponent({ activeProviders, torontoCenter }) {
         maxZoom={20}
       />
       
-      {/* Service coverage area circle */}
-      {/* <Circle
-        center={torontoCenter}
-        radius={15000} // 15km radius for Toronto
-        pathOptions={{
-          color: '#3B82F6',
-          fillColor: '#3B82F6',
-          fillOpacity: 0.15,
-          weight: 3,
-          dashArray: '8, 8'
-        }}
-      /> */}
+      {/* User location marker */}
+      {userLocation && (
+        <Marker
+          position={[userLocation.lat, userLocation.lng]}
+          icon={isClient && typeof L !== 'undefined' ? new L.Icon({
+            iconUrl: 'data:image/svg+xml;base64,' + btoa(`
+              <svg width="30" height="40" viewBox="0 0 30 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="15" cy="15" r="10" fill="#10B981" stroke="#FFFFFF" stroke-width="3" opacity="0.9"/>
+                <circle cx="15" cy="15" r="5" fill="#FFFFFF"/>
+              </svg>
+            `),
+            iconSize: [30, 40],
+            iconAnchor: [15, 40],
+            popupAnchor: [0, -40],
+          }) : null}
+        >
+          <Popup>
+            <div className="text-sm font-semibold">Your Location</div>
+          </Popup>
+        </Marker>
+      )}
+      
+      {/* Service range circle */}
+      {userLocation && serviceRange > 0 && (
+        <Circle
+          center={[userLocation.lat, userLocation.lng]}
+          radius={serviceRange * 1000} // Convert km to meters
+          pathOptions={{
+            color: '#3B82F6',
+            fillColor: '#3B82F6',
+            fillOpacity: 0.15,
+            weight: 3,
+            dashArray: '10, 10'
+          }}
+        />
+      )}
       
       {/* Service provider markers */}
-      {activeProviders.map((provider) => (
+      {activeProviders
+        .filter(provider => provider.position && provider.position.length === 2)
+        .map((provider) => (
         <Marker
           key={provider.id}
           position={provider.position}
           icon={customIcon}
+          eventHandlers={{
+            click: () => {
+              // Directly open the main modal when marker is clicked
+              if (onProviderClick) {
+                onProviderClick(provider.id);
+              }
+            }
+          }}
         >
-          <Popup className="custom-popup">
-            <div className="p-4 bg-gradient-to-br from-white to-blue-50 rounded-2xl shadow-2xl min-w-[240px] border border-blue-200 backdrop-blur-sm">
-              {/* Header with 3D effect */}
-              <div className="flex items-center space-x-4 mb-3">
-                <div className="relative">
-                  <div className="text-3xl border-2 border-blue-300 rounded-xl p-2 bg-gradient-to-br from-blue-100 to-indigo-100 shadow-lg">
-                    {provider.photo}
-                  </div>
-                  {/* Online status indicator */}
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-sm"></div>
-                </div>
-                <div className='flex flex-col flex-1'>
-                  <h3 className="font-bold text-gray-900 text-lg leading-tight">
-                    {provider.name}
-                  </h3>
-                  <p className="text-blue-600 text-sm font-semibold bg-blue-100 px-2 py-1 rounded-full inline-block w-fit">
-                    {provider.service}
-                  </p>
-                </div>
-              </div>
-              
-              {/* Stats with modern design */}
-              <div className="flex items-center justify-between gap-4 pt-3 border-t border-gray-200">
-                <div className="flex items-center space-x-1">
-                  <div className="flex text-yellow-500">
-                    <span className="text-sm">⭐</span>
-                  </div>
-                  <span className="text-gray-800 font-bold text-sm">{provider.rating}</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-green-600 font-bold text-sm">{provider.distance}</span>
-                </div>
-              </div>
-              
-              {/* Action button */}
-              <div className="mt-3 pt-3">
-                <button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 px-4 rounded-xl font-semibold text-sm hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                  Book Now
-                </button>
-              </div>
-            </div>
-          </Popup>
+     
         </Marker>
       ))}
       </MapContainer>

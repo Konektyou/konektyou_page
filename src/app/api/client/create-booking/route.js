@@ -5,6 +5,7 @@ import Provider from '@/models/Provider';
 import Service from '@/models/Service';
 import Client from '@/models/Client';
 import Payment from '@/models/Payment';
+import AdminSettings from '@/models/AdminSettings';
 import { getEmailTransporter } from '@/lib/emailConfig';
 const jwt = require('jsonwebtoken');
 
@@ -31,7 +32,8 @@ export async function POST(request) {
       startDateTime,
       endTime,
       workLocation,
-      amount
+      amount, // This should be the total amount including tax
+      baseAmount // Provider's base price (before tax)
     } = await request.json();
 
     // Validate required fields
@@ -60,10 +62,24 @@ export async function POST(request) {
       );
     }
 
+    // Get admin settings for tax rate
+    const adminSettings = await AdminSettings.getSettings();
+    const taxRate = adminSettings.taxRate / 100; // Convert percentage to decimal
+    
+    // Calculate amounts
+    // baseAmount = provider's set price (before tax)
+    // taxAmount = baseAmount × taxRate
+    // amount = baseAmount + taxAmount (total client pays)
+    const calculatedBaseAmount = baseAmount || amount; // Use provided baseAmount or fallback to amount
+    const calculatedTaxAmount = calculatedBaseAmount * taxRate;
+    const totalAmount = calculatedBaseAmount + calculatedTaxAmount;
+
     // Create booking
-    // IMPORTANT: The 'amount' here is the provider's set price (e.g., $10/hour × duration)
-    // Client pays exactly this amount. Commission is NOT added to the client's price.
-    // Commission will be deducted from provider earnings when admin releases the payment.
+    // IMPORTANT: 
+    // - baseAmount = provider's set price (e.g., $10/hour × duration)
+    // - taxAmount = tax on provider's price
+    // - amount = baseAmount + taxAmount (total client pays)
+    // - Commission is NOT added to client's price, it's deducted from provider earnings
     const booking = await Booking.create({
       clientId,
       providerId,
@@ -72,7 +88,10 @@ export async function POST(request) {
       endTime: new Date(endTime),
       duration,
       workLocation,
-      amount, // This is the provider's price - client pays exactly this amount
+      baseAmount: calculatedBaseAmount, // Provider's base price (before tax)
+      taxAmount: calculatedTaxAmount, // Tax amount
+      taxRate: adminSettings.taxRate, // Tax rate at time of booking
+      amount: totalAmount, // Total amount client pays (baseAmount + tax)
       status: 'pending',
       paymentStatus: 'pending'
     });
@@ -84,15 +103,17 @@ export async function POST(request) {
     try {
       const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_51MAu7gI7BEvOC2zJTYQxB3JsfS5rINOJylLzJuhWTG3p4WAvTRQ1us6Fof8Z2UZEi15rxmAyXTbNnny1stNz4d7200w9BfzrOR');
       
-      // Create Stripe payment intent for the exact booking amount (provider's price)
-      // Commission is NOT added here - client pays provider's set price only
+      // Create Stripe payment intent for the total amount (provider's price + tax)
+      // Client pays: baseAmount + taxAmount
       const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(amount * 100), // Convert to cents - this is provider's price
+        amount: Math.round(totalAmount * 100), // Convert to cents - total including tax
         currency: 'cad',
         metadata: {
           bookingId: booking._id.toString(),
           clientId: clientId.toString(),
-          providerId: providerId.toString()
+          providerId: providerId.toString(),
+          baseAmount: calculatedBaseAmount.toString(),
+          taxAmount: calculatedTaxAmount.toString()
         }
       });
 

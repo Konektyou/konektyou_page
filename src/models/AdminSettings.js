@@ -9,6 +9,13 @@ const AdminSettingsSchema = new mongoose.Schema(
       max: 100,
       required: true
     },
+    taxRate: {
+      type: Number,
+      default: 13, // Default 13% (Canada HST/GST)
+      min: 0,
+      max: 100,
+      required: true
+    },
     updatedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Admin',
@@ -22,7 +29,7 @@ const AdminSettingsSchema = new mongoose.Schema(
 AdminSettingsSchema.statics.getSettings = async function() {
   let settings = await this.findOne();
   if (!settings) {
-    settings = await this.create({ commissionRate: 10 });
+    settings = await this.create({ commissionRate: 10, taxRate: 13 });
   }
   return settings;
 };

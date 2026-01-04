@@ -73,7 +73,8 @@ export async function GET(request) {
         area: providerObj.area || '',
         photo: photoUrl,
         services: formattedServices,
-        status: 'available' // All fetched providers are available
+        status: 'available', // All fetched providers are available
+        location: providerObj.location || null // Include location coordinates
       };
     });
 

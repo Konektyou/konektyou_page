@@ -65,6 +65,18 @@ const BookingSchema = new mongoose.Schema(
       required: true,
       min: 0
     },
+    baseAmount: {
+      type: Number,
+      default: null // Provider's base price (before tax)
+    },
+    taxAmount: {
+      type: Number,
+      default: null // Tax amount
+    },
+    taxRate: {
+      type: Number,
+      default: null // Tax rate at time of booking
+    },
     status: {
       type: String,
       enum: ['pending', 'confirmed', 'in-progress', 'completed', 'cancelled'],

@@ -48,6 +48,15 @@ export async function POST(request) {
       expires: savedProvider.emailVerificationOTPExpires
     });
 
+    // Display OTP prominently in console
+    console.log('\n========================================');
+    console.log('📧 EMAIL VERIFICATION OTP CODE');
+    console.log('========================================');
+    console.log(`Email: ${provider.email}`);
+    console.log(`OTP Code: ${otp}`);
+    console.log(`Expires: ${otpExpires.toLocaleString()}`);
+    console.log('========================================\n');
+
     // Send OTP email
     try {
       const transporter = nodemailer.createTransport({

@@ -257,9 +257,23 @@ export default function PaymentsPage() {
                 <p className="text-3xl font-bold text-green-900 mt-2">
                   {formatCurrency(summary.totalRevenue)}
                 </p>
+                <p className="text-xs text-green-700 mt-1">(Including tax)</p>
               </div>
               <div className="bg-green-500 rounded-full p-3">
                 <FiTrendingUp className="w-6 h-6 text-white" />
+              </div>
+            </div>
+          </div>
+          <div className="bg-gradient-to-br from-purple-50 to-pink-100 rounded-xl shadow-sm border border-purple-200 p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium text-purple-600 uppercase tracking-wide">Total Tax</p>
+                <p className="text-3xl font-bold text-purple-900 mt-2">
+                  {formatCurrency(summary.totalTax || 0)}
+                </p>
+              </div>
+              <div className="bg-purple-500 rounded-full p-3">
+                <FiDollarSign className="w-6 h-6 text-white" />
               </div>
             </div>
           </div>
@@ -454,6 +468,16 @@ export default function PaymentsPage() {
                       <span className="px-3 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded-lg">
                         {transaction.serviceName}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-700">
+                        {formatCurrency(transaction.baseAmount || transaction.bookingAmount)}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-purple-700">
+                        {formatCurrency(transaction.taxAmount || 0)}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className={`text-sm font-bold ${

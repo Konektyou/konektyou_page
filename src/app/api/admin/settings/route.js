@@ -18,7 +18,8 @@ export async function GET(request) {
     return NextResponse.json({
       success: true,
       settings: {
-        commissionRate: settings.commissionRate
+        commissionRate: settings.commissionRate,
+        taxRate: settings.taxRate
       }
     });
   } catch (error) {
@@ -41,25 +42,34 @@ export async function PUT(request) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { commissionRate } = await request.json();
-
-    if (commissionRate === undefined || commissionRate === null) {
-      return NextResponse.json(
-        { success: false, message: 'Commission rate is required' },
-        { status: 400 }
-      );
-    }
-
-    const rate = parseFloat(commissionRate);
-    if (isNaN(rate) || rate < 0 || rate > 100) {
-      return NextResponse.json(
-        { success: false, message: 'Commission rate must be between 0 and 100' },
-        { status: 400 }
-      );
-    }
+    const { commissionRate, taxRate } = await request.json();
 
     const settings = await AdminSettings.getSettings();
-    settings.commissionRate = rate;
+
+    // Update commission rate if provided
+    if (commissionRate !== undefined && commissionRate !== null) {
+      const rate = parseFloat(commissionRate);
+      if (isNaN(rate) || rate < 0 || rate > 100) {
+        return NextResponse.json(
+          { success: false, message: 'Commission rate must be between 0 and 100' },
+          { status: 400 }
+        );
+      }
+      settings.commissionRate = rate;
+    }
+
+    // Update tax rate if provided
+    if (taxRate !== undefined && taxRate !== null) {
+      const rate = parseFloat(taxRate);
+      if (isNaN(rate) || rate < 0 || rate > 100) {
+        return NextResponse.json(
+          { success: false, message: 'Tax rate must be between 0 and 100' },
+          { status: 400 }
+        );
+      }
+      settings.taxRate = rate;
+    }
+
     // Note: updatedBy could be extracted from token if needed, but for now we'll leave it null
     // since admin uses simple token, not JWT
     await settings.save();
@@ -68,7 +78,8 @@ export async function PUT(request) {
       success: true,
       message: 'Settings updated successfully',
       settings: {
-        commissionRate: settings.commissionRate
+        commissionRate: settings.commissionRate,
+        taxRate: settings.taxRate
       }
     });
   } catch (error) {

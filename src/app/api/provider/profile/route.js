@@ -65,6 +65,7 @@ export async function GET(request) {
         verificationStatus: provider.verificationStatus,
         rejectionReason: provider.rejectionReason,
         photoPath: provider.photoPath,
+        location: provider.location || null,
         createdAt: provider.createdAt
       }
     });

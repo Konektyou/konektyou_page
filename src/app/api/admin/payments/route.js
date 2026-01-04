@@ -53,10 +53,12 @@ export async function GET(request) {
       const service = bookingObj.serviceId;
 
       // Calculate admin commission and provider earnings
-      // bookingObj.amount = provider's set price (what client paid)
-      // Commission is deducted from provider earnings, NOT added to client price
-      const adminCommission = bookingObj.amount * commissionRate;
-      const providerEarnings = bookingObj.amount - adminCommission;
+      // bookingObj.baseAmount = provider's base price (before tax)
+      // bookingObj.amount = total amount client paid (baseAmount + tax)
+      // Commission is calculated on baseAmount, NOT on total amount with tax
+      const baseAmount = bookingObj.baseAmount || bookingObj.amount; // Fallback to amount if baseAmount not set
+      const adminCommission = baseAmount * commissionRate;
+      const providerEarnings = baseAmount - adminCommission;
 
       // Check if payment can be released
       const eligibleForRelease = bookingObj.status === 'completed' && 
@@ -83,7 +85,9 @@ export async function GET(request) {
         providerPhone: provider?.phone || '',
         serviceId: service?._id?.toString() || bookingObj.serviceId?.toString(),
         serviceName: service?.name || 'Service',
-        bookingAmount: bookingObj.amount,
+        baseAmount: baseAmount, // Provider's base price (before tax)
+        taxAmount: bookingObj.taxAmount || 0, // Tax amount
+        bookingAmount: bookingObj.amount, // Total amount client paid (baseAmount + tax)
         adminCommission: bookingObj.paymentStatus === 'refunded' ? 0 : adminCommission,
         providerEarnings: bookingObj.paymentStatus === 'refunded' ? 0 : providerEarnings,
         status: bookingObj.status,
@@ -106,7 +110,11 @@ export async function GET(request) {
     // Calculate summary statistics
     const totalRevenue = transactions
       .filter(t => t.paymentStatus === 'paid' && t.type === 'booking')
-      .reduce((sum, t) => sum + t.bookingAmount, 0);
+      .reduce((sum, t) => sum + t.bookingAmount, 0); // Total amount client paid (including tax)
+
+    const totalTax = transactions
+      .filter(t => t.paymentStatus === 'paid' && t.type === 'booking')
+      .reduce((sum, t) => sum + (t.taxAmount || 0), 0);
 
     const totalAdminCommission = transactions
       .filter(t => t.paymentStatus === 'paid' && t.type === 'booking')
@@ -124,6 +132,7 @@ export async function GET(request) {
       transactions,
       summary: {
         totalRevenue,
+        totalTax,
         totalAdminCommission,
         totalRefunds,
         completedBookings,

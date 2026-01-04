@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
-import { FiClock, FiMapPin, FiCalendar, FiLoader, FiArrowLeft } from 'react-icons/fi';
+import { FiClock, FiMapPin, FiCalendar, FiLoader, FiArrowLeft, FiNavigation } from 'react-icons/fi';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { getClientToken } from '@/lib/clientAuth';
@@ -38,7 +38,8 @@ function CheckoutForm({ bookingData, provider, onSuccess, onError }) {
         body: JSON.stringify({
           ...bookingData,
           providerId: provider.id,
-          serviceId: bookingData.serviceId || selectedService?.id
+          baseAmount: bookingData.baseAmount, // Provider's base price (before tax)
+          amount: bookingData.amount // Total amount including tax
         })
       });
 
@@ -160,6 +161,8 @@ export default function BookProviderPage() {
   const [provider, setProvider] = useState(null);
   const [selectedService, setSelectedService] = useState(null);
   const [error, setError] = useState('');
+  const [taxRate, setTaxRate] = useState(13); // Default 13% for Canada
+  const [locationLoading, setLocationLoading] = useState(false);
   
   const [bookingData, setBookingData] = useState({
     duration: 2, // hours
@@ -176,11 +179,26 @@ export default function BookProviderPage() {
 
   useEffect(() => {
     fetchProvider();
+    fetchTaxRate();
     const clientAuth = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('clientAuth') || '{}') : null;
     if (clientAuth?.client?.name) {
       setBookingData(prev => ({ ...prev, clientName: clientAuth.client.name }));
     }
   }, [providerId]);
+
+  const fetchTaxRate = async () => {
+    try {
+      // Fetch tax rate from public API endpoint
+      const response = await fetch('/api/public/tax-rate');
+      const data = await response.json();
+      if (data.success && data.taxRate) {
+        setTaxRate(data.taxRate);
+      }
+    } catch (err) {
+      console.error('Error fetching tax rate:', err);
+      // Use default 13% if fetch fails
+    }
+  };
 
   const fetchProvider = async () => {
     try {
@@ -219,13 +237,22 @@ export default function BookProviderPage() {
     }
   };
 
-  // Calculate booking amount based on provider's set price
-  // Client pays exactly this amount - commission is NOT added to the price
-  // Commission will be deducted from provider earnings when admin releases payment
+  // Calculate booking amounts
+  // baseAmount = provider's set price (before tax)
+  // taxAmount = baseAmount × taxRate
+  // totalAmount = baseAmount + taxAmount (what client pays)
+  const calculateAmounts = () => {
+    if (!selectedService) return { baseAmount: 0, taxAmount: 0, totalAmount: 0 };
+    
+    const baseAmount = selectedService.basePrice * bookingData.duration;
+    const taxAmount = baseAmount * (taxRate / 100);
+    const totalAmount = baseAmount + taxAmount;
+    
+    return { baseAmount, taxAmount, totalAmount };
+  };
+
   const calculateAmount = () => {
-    if (!selectedService) return 0;
-    // Provider's base price × duration = total amount client pays
-    return selectedService.basePrice * bookingData.duration;
+    return calculateAmounts().totalAmount;
   };
 
   const handleContinue = () => {
@@ -265,6 +292,114 @@ export default function BookProviderPage() {
     setError(errorMessage);
   };
 
+  const handleUseCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      setError('Geolocation is not supported by your browser');
+      return;
+    }
+
+    setLocationLoading(true);
+    setError('');
+
+    const processLocation = async (latitude, longitude) => {
+      try {
+        // Reverse geocode to get address details
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`
+        );
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch address data');
+        }
+        
+        const data = await response.json();
+        
+        console.log('Reverse geocoding response:', data);
+        
+        if (data && data.address) {
+          const address = data.address;
+          
+          // Extract address components - handle different response formats
+          let streetAddress = '';
+          
+          // Try different combinations for street address
+          if (address.house_number && address.road) {
+            streetAddress = `${address.house_number} ${address.road}`;
+          } else if (address.road) {
+            streetAddress = address.road;
+          } else if (address.street) {
+            streetAddress = address.street;
+          } else {
+            // For areas without specific street names, use neighbourhood/suburb
+            const addressParts = [];
+            if (address.neighbourhood) addressParts.push(address.neighbourhood);
+            if (address.suburb && address.suburb !== address.neighbourhood) {
+              addressParts.push(address.suburb);
+            }
+            if (addressParts.length > 0) {
+              streetAddress = addressParts.join(', ');
+            } else if (data.display_name) {
+              // Fallback to first part of display_name
+              const parts = data.display_name.split(',');
+              streetAddress = parts[0] || parts[1] || '';
+            }
+          }
+          
+          const city = address.city || address.town || address.village || address.municipality || address.subdistrict || '';
+          const province = address.state || address.province || address.county || '';
+          const postalCode = address.postcode || address.postal_code || '';
+          
+          console.log('Extracted values:', { streetAddress, city, province, postalCode });
+          
+          // Update form with fetched location data
+          setBookingData(prev => ({
+            ...prev,
+            workLocation: {
+              address: streetAddress.trim() || '',
+              city: city.trim() || '',
+              province: province.trim() || '',
+              postalCode: postalCode.trim() || ''
+            }
+          }));
+          
+          setError('');
+        } else {
+          setError('Could not determine address from location. Please enter manually.');
+        }
+      } catch (geoError) {
+        console.error('Reverse geocoding error:', geoError);
+        setError('Could not determine address from location. Please enter manually.');
+      } finally {
+        setLocationLoading(false);
+      }
+    };
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        processLocation(latitude, longitude);
+      },
+      (err) => {
+        console.error('Location error:', err);
+        let errorMessage = 'Unable to get your location. Please enter manually.';
+        if (err.code === err.PERMISSION_DENIED) {
+          errorMessage = 'Location permission denied. Please allow location access and try again.';
+        } else if (err.code === err.POSITION_UNAVAILABLE) {
+          errorMessage = 'Location information unavailable. Please enter manually.';
+        } else if (err.code === err.TIMEOUT) {
+          errorMessage = 'Location request timed out. Please try again.';
+        }
+        setError(errorMessage);
+        setLocationLoading(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -295,7 +430,7 @@ export default function BookProviderPage() {
     : null;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 space-y-6">
+    <div className="max-w-full space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
         <button
@@ -410,7 +545,27 @@ export default function BookProviderPage() {
       {step === 2 && (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-6">
           <div>
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Confirm Work Location</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-gray-900">Confirm Work Location</h2>
+              <button
+                type="button"
+                onClick={handleUseCurrentLocation}
+                disabled={locationLoading}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {locationLoading ? (
+                  <>
+                    <FiLoader className="w-4 h-4 animate-spin" />
+                    Fetching...
+                  </>
+                ) : (
+                  <>
+                    <FiNavigation className="w-4 h-4" />
+                    Use My Current Location
+                  </>
+                )}
+              </button>
+            </div>
             
             <div className="space-y-4">
               <div>
@@ -539,17 +694,33 @@ export default function BookProviderPage() {
                 <span className="text-gray-600">Location:</span>
                 <span className="font-medium text-right">{bookingData.workLocation.address}, {bookingData.workLocation.city}</span>
               </div>
-              <div className="flex justify-between pt-2 border-t border-gray-300">
-                <span className="text-lg font-bold">Total:</span>
-                <span className="text-lg font-bold">${amount.toFixed(2)}</span>
-              </div>
+              {(() => {
+                const amounts = calculateAmounts();
+                return (
+                  <>
+                    <div className="flex justify-between pt-2 border-t border-gray-300">
+                      <span className="text-gray-600">Service Price:</span>
+                      <span className="font-medium">${amounts.baseAmount.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Tax ({taxRate}%):</span>
+                      <span className="font-medium">${amounts.taxAmount.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between pt-2 border-t-2 border-gray-400">
+                      <span className="text-lg font-bold">Total:</span>
+                      <span className="text-lg font-bold">${amounts.totalAmount.toFixed(2)}</span>
+                    </div>
+                  </>
+                );
+              })()}
             </div>
 
             <Elements stripe={stripePromise}>
               <CheckoutForm
                 bookingData={{
                   ...bookingData,
-                  amount,
+                  baseAmount: calculateAmounts().baseAmount,
+                  amount: calculateAmounts().totalAmount,
                   endTime: endTime.toISOString()
                 }}
                 provider={provider}

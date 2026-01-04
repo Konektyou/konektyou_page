@@ -115,6 +115,17 @@ const ProviderSchema = new mongoose.Schema(
       type: String,
       default: ''
     },
+    // Location coordinates for map-based discovery
+    location: {
+      latitude: {
+        type: Number,
+        default: null
+      },
+      longitude: {
+        type: Number,
+        default: null
+      }
+    },
     // Documents
     documents: {
       type: [DocumentSchema],

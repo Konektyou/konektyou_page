@@ -11,8 +11,8 @@ export const getEmailTransporter = () => {
     port: port,
     secure: useSSL, // true for SSL (port 465), false for STARTTLS (port 587)
     auth: {
-      user: process.env.SMTP_USER || 'hello@konektly.ca',
-      pass: process.env.SMTP_PASS || 'thisisit@2025',
+      user: 'hello@konektly.ca',
+      pass: 'thisisit@2025',
     },
   };
 
@@ -21,7 +21,7 @@ export const getEmailTransporter = () => {
     smtpConfig.tls = {
       ciphers: 'SSLv3',
       rejectUnauthorized: false,
-    };
+    }; 
   }
 
   return nodemailer.createTransport(smtpConfig);

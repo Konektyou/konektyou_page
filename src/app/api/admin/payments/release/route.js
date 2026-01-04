@@ -80,10 +80,12 @@ export async function POST(request) {
 
       try {
         // Calculate provider earnings (after commission deduction)
-        // booking.amount = provider's set price (what client paid)
-        // Commission is deducted from provider earnings, NOT added to client price
-        const adminCommission = booking.amount * commissionRate;
-        const providerEarnings = booking.amount - adminCommission;
+        // booking.baseAmount = provider's base price (before tax)
+        // booking.amount = total amount client paid (baseAmount + tax)
+        // Commission is calculated on baseAmount, NOT on total amount with tax
+        const baseAmount = booking.baseAmount || booking.amount; // Fallback to amount if baseAmount not set
+        const adminCommission = baseAmount * commissionRate;
+        const providerEarnings = baseAmount - adminCommission;
 
         // Find or create payment record
         let payment = await Payment.findOne({

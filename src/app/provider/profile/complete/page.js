@@ -1,9 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { FiUpload, FiX, FiEye, FiEyeOff, FiLoader, FiAlertCircle, FiCheckCircle } from 'react-icons/fi';
+import { FiUpload, FiX, FiEye, FiEyeOff, FiLoader, FiAlertCircle, FiCheckCircle, FiMapPin, FiNavigation } from 'react-icons/fi';
 import { getProviderData, getProviderToken } from '@/lib/providerAuth';
+import dynamic from 'next/dynamic';
+
+// Dynamically import MapComponent to avoid SSR issues
+const LocationPickerMap = dynamic(() => import('@/components/LocationPickerMap'), { 
+  ssr: false,
+  loading: () => <div className="h-64 bg-gray-100 rounded-lg flex items-center justify-center">Loading map...</div>
+});
 
 const SERVICE_TYPES = [
   'Personal Support Worker (PSW)',
@@ -44,7 +51,9 @@ export default function CompleteProfilePage() {
     province: '',
     serviceType: '',
     experience: '',
-    businessName: ''
+    businessName: '',
+    latitude: '',
+    longitude: ''
   });
 
   // File states
@@ -55,6 +64,9 @@ export default function CompleteProfilePage() {
 
   // Validation errors
   const [errors, setErrors] = useState({});
+
+  // Ref for LocationPickerMap to access getCurrentLocation function
+  const locationMapRef = useRef(null);
 
   useEffect(() => {
     // Fetch existing profile data if available
@@ -83,7 +95,9 @@ export default function CompleteProfilePage() {
           province: profile.province || '',
           serviceType: profile.serviceType || '',
           experience: profile.experience || '',
-          businessName: profile.businessName || ''
+          businessName: profile.businessName || '',
+          latitude: profile.location?.latitude || '',
+          longitude: profile.location?.longitude || ''
         });
         
         if (profile.photoPath) {
@@ -108,11 +122,12 @@ export default function CompleteProfilePage() {
     if (!formData.name.trim()) newErrors.name = 'Full name is required';
     if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
     if (!formData.city.trim()) newErrors.city = 'City is required';
-    if (!formData.province) newErrors.province = 'Province is required';
+    // Province is now optional
     if (!formData.serviceType) newErrors.serviceType = 'Service type is required';
     if (!formData.experience) newErrors.experience = 'Years of experience is required';
     if (!profilePhoto) newErrors.profilePhoto = 'Profile photo is required';
     if (documents.length === 0) newErrors.documents = 'At least one document is required';
+    if (!formData.latitude || !formData.longitude) newErrors.location = 'Please select your location on the map';
 
     // Phone validation (Canadian format)
     const phoneRegex = /^(\+?1[-.\s]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}$/;
@@ -229,7 +244,7 @@ export default function CompleteProfilePage() {
 
       // Add form fields
       Object.keys(formData).forEach(key => {
-        if (formData[key]) {
+        if (formData[key] !== null && formData[key] !== '') {
           formDataToSend.append(key, formData[key]);
         }
       });
@@ -420,7 +435,7 @@ export default function CompleteProfilePage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Province <span className="text-red-500">*</span>
+                Province <span className="text-gray-400 text-xs">(Optional)</span>
               </label>
               <select
                 name="province"
@@ -431,13 +446,85 @@ export default function CompleteProfilePage() {
                   errors.province ? 'border-red-300' : 'border-gray-300'
                 } ${isReadOnly ? 'bg-gray-50 cursor-not-allowed' : ''}`}
               >
-                <option value="">Select Province</option>
+                <option value="">Select Province (Optional)</option>
                 {CANADIAN_PROVINCES.map(province => (
                   <option key={province} value={province}>{province}</option>
                 ))}
               </select>
               {errors.province && <p className="text-red-600 text-xs mt-1">{errors.province}</p>}
             </div>
+          </div>
+          
+          {/* Location Map Picker */}
+          <div className="mt-4">
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Select Your Location on Map <span className="text-red-500">*</span>
+              </label>
+              {!isReadOnly && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (locationMapRef.current) {
+                      locationMapRef.current();
+                    }
+                  }}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                >
+                  <FiNavigation className="w-4 h-4" />
+                  Use My Current Location
+                </button>
+              )}
+            </div>
+            <p className="text-xs text-gray-500 mb-3">
+              Click on the map to set your service location, or use the button above to automatically detect your current location. This helps customers find you.
+            </p>
+            {!isReadOnly ? (
+              <LocationPickerMap
+                initialLat={formData.latitude ? parseFloat(formData.latitude) : 43.6532}
+                initialLng={formData.longitude ? parseFloat(formData.longitude) : -79.3832}
+                onLocationSelect={(lat, lng) => {
+                  setFormData(prev => ({ ...prev, latitude: lat.toString(), longitude: lng.toString() }));
+                  if (errors.location) {
+                    setErrors(prev => ({ ...prev, location: '' }));
+                  }
+                }}
+                onLocationWithCity={(lat, lng, city) => {
+                  setFormData(prev => ({ 
+                    ...prev, 
+                    latitude: lat.toString(), 
+                    longitude: lng.toString(),
+                    city: city || prev.city // Auto-fill city if available
+                  }));
+                  if (errors.location) {
+                    setErrors(prev => ({ ...prev, location: '', city: '' }));
+                  }
+                  if (errors.city && city) {
+                    setErrors(prev => ({ ...prev, city: '' }));
+                  }
+                }}
+                onGetCurrentLocation={locationMapRef}
+              />
+            ) : (
+              formData.latitude && formData.longitude ? (
+                <LocationPickerMap
+                  initialLat={parseFloat(formData.latitude)}
+                  initialLng={parseFloat(formData.longitude)}
+                  readOnly={true}
+                />
+              ) : (
+                <div className="h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500">
+                  No location set
+                </div>
+              )
+            )}
+            {errors.location && <p className="text-red-600 text-xs mt-2">{errors.location}</p>}
+            {formData.latitude && formData.longitude && (
+              <p className="text-xs text-gray-600 mt-2 flex items-center gap-1">
+                <FiMapPin className="w-3 h-3" />
+                Location: {parseFloat(formData.latitude).toFixed(6)}, {parseFloat(formData.longitude).toFixed(6)}
+              </p>
+            )}
           </div>
         </div>
 

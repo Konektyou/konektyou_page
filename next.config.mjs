@@ -22,9 +22,6 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
   
-  // Add empty turbopack config to silence warning when using webpack
-  turbopack: {},
-  
   // Webpack configuration for better build performance
   webpack: (config, { isServer }) => {
     // Exclude server-only modules from client bundles

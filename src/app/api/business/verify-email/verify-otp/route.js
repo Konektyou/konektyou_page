@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import Business from '@/models/Business';
-import nodemailer from 'nodemailer';
+import { getEmailTransporter } from '@/lib/emailConfig';
 const jwt = require('jsonwebtoken');
 
 export async function POST(request) {
@@ -69,22 +69,11 @@ export async function POST(request) {
       
       // Send new OTP email
       try {
-        const transporter = nodemailer.createTransport({
-          host: 'smtpout.secureserver.net',
-          port: 587,
-          secure: false,
-          auth: {
-            user: 'hello@konektly.ca',
-            pass: 'thisisit@2025',
-          },
-          tls: {
-            ciphers: 'SSLv3',
-            rejectUnauthorized: false,
-          },
-        });
+        const transporter = getEmailTransporter();
+        const fromEmail = process.env.SMTP_USER || 'hello@konektly.ca';
 
         await transporter.sendMail({
-          from: 'hello@konektly.ca',
+          from: fromEmail,
           to: business.email,
           subject: 'Email Verification Code - Konektly',
           html: `

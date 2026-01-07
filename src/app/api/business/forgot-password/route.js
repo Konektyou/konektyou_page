@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import Business from '@/models/Business';
-import nodemailer from 'nodemailer';
+import { getEmailTransporter } from '@/lib/emailConfig';
 import crypto from 'crypto';
 
 export async function POST(request) {
@@ -35,24 +35,13 @@ export async function POST(request) {
 
     // Send password reset email
     try {
-      const transporter = nodemailer.createTransport({
-        host: 'smtpout.secureserver.net',
-        port: 587,
-        secure: false,
-        auth: {
-          user: 'hello@konektly.ca',
-          pass: 'thisisit@2025',
-        },
-        tls: {
-          ciphers: 'SSLv3',
-          rejectUnauthorized: false,
-        },
-      });
+      const transporter = getEmailTransporter();
+      const fromEmail = process.env.SMTP_USER || 'hello@konektly.ca';
 
       const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/business-forgot-password?token=${resetToken}`;
 
       const mailOptions = {
-        from: 'hello@konektly.ca',
+        from: fromEmail,
         to: business.email,
         subject: 'Password Reset Request - Konektly',
         html: `

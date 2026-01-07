@@ -6,21 +6,27 @@ export const getEmailTransporter = () => {
   const port = parseInt(process.env.SMTP_PORT || '587');
   const useSSL = port === 465;
   
+  // For Outlook/Office365 emails, use smtp.office365.com
+  // For GoDaddy emails, use smtpout.secureserver.net
+  const smtpHost = process.env.SMTP_HOST || 'smtp.office365.com';
+  
   const smtpConfig = {
-    host: process.env.SMTP_HOST || 'smtpout.secureserver.net',
+    host: smtpHost,
     port: port,
     secure: useSSL, // true for SSL (port 465), false for STARTTLS (port 587)
     auth: {
-      user: 'hello@konektly.ca',
-      pass: 'thisisit@2025',
+      user: process.env.SMTP_USER || 'hello@konektly.ca',
+      pass: process.env.SMTP_PASS || 'thisisit@2025',
     },
   };
 
   // Only add TLS config for STARTTLS (port 587)
+  // Removed SSLv3 cipher as it's deprecated and causes authentication failures
   if (!useSSL) {
     smtpConfig.tls = {
-      ciphers: 'SSLv3',
       rejectUnauthorized: false,
+      // Use modern TLS settings
+      minVersion: 'TLSv1.2',
     }; 
   }
 

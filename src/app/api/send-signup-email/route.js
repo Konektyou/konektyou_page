@@ -21,20 +21,8 @@ export async function POST(request) {
 
     // Send email after successful database save
     try {
-      // Create transporter with GoDaddy Workspace Email SMTP settings
-      const transporter = nodemailer.createTransport({
-        host: 'smtpout.secureserver.net', // GoDaddy Workspace Email
-        port: 587,
-        secure: false, // false for STARTTLS on port 587
-        auth: {
-          user: 'hello@konektly.ca',
-          pass: 'thisisit@2025',
-        },
-        tls: {
-          ciphers: 'SSLv3',
-          rejectUnauthorized: false,
-        },
-      });
+      const transporter = getEmailTransporter();
+      const fromEmail = process.env.SMTP_USER || 'hello@konektly.ca';
 
       // Format time display
       const timeDisplay = {
@@ -46,7 +34,7 @@ export async function POST(request) {
 
       // Email content
       const mailOptions = {
-        from: 'hello@konektly.ca',
+        from: fromEmail,
         to: 'konektdemo@gmail.com',
         subject: `New Client Signup: ${name}`,
         html: `

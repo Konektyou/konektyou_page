@@ -55,6 +55,42 @@ SMTP_PASS=your_godaddy_email_password_here
 
 ## Troubleshooting
 
+### Error: "SmtpClientAuthentication is disabled for the Tenant" (Microsoft 365)
+
+**Problem:** You're seeing this error:
+```
+535 5.7.139 Authentication unsuccessful, SmtpClientAuthentication is disabled for the Tenant
+```
+
+**Solution:** This error occurs when trying to use Microsoft 365/Office365 SMTP. The code now defaults to GoDaddy SMTP. To fix:
+
+1. **Ensure you're using GoDaddy SMTP:**
+   - Check your `.env` file has `SMTP_HOST=smtpout.secureserver.net`
+   - If it's set to `smtp.office365.com`, change it to GoDaddy
+   - Or remove `SMTP_HOST` from `.env` to use the default (GoDaddy)
+
+2. **Verify Environment Variables:**
+   Make sure your `.env` file in the project root contains:
+   ```env
+   SMTP_HOST=smtpout.secureserver.net
+   SMTP_PORT=587
+   SMTP_USER=hello@konektly.ca
+   SMTP_PASS=your_godaddy_email_password
+   ```
+
+3. **Restart PM2:**
+   ```bash
+   pm2 restart konektyo
+   ```
+
+4. **Check Logs:**
+   ```bash
+   pm2 logs konektyo --lines 50
+   ```
+   Look for `SMTP Configuration:` log entry - it should show:
+   - `host: smtpout.secureserver.net`
+   - `usingGoDaddy: true`
+
 ### If emails are not sending:
 
 1. **Verify GoDaddy Email Account:**
@@ -70,10 +106,10 @@ SMTP_PASS=your_godaddy_email_password_here
 
 3. **Check Server Logs:**
    ```bash
-   pm2 logs konektyou_page --lines 100
+   pm2 logs konektyo --lines 100
    ```
    Look for:
-   - `host: smtpout.secureserver.net` (should show GoDaddy, not Outlook)
+   - `SMTP Configuration:` log showing `host: smtpout.secureserver.net` (should show GoDaddy, not Outlook)
    - `usingGoDaddy: true`
    - Any error messages
 
@@ -90,5 +126,6 @@ SMTP_PASS=your_godaddy_email_password_here
 - The app will continue to work even if email fails (signups are still saved to the database)
 - Email errors are logged but don't break the signup process
 - Make sure your `.env` file is in `.gitignore` (already configured)
-- The code now **forces GoDaddy** - it will use `smtpout.secureserver.net` even if environment variables point elsewhere
+- The code now **defaults to GoDaddy** - it will use `smtpout.secureserver.net` by default
+- If you need to use a different SMTP provider, set `SMTP_HOST` in your `.env` file
 

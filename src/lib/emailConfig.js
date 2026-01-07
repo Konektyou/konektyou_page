@@ -2,13 +2,15 @@ import nodemailer from 'nodemailer';
 
 // Centralized email configuration
 // Uses environment variables if available, otherwise falls back to defaults
+// Defaults to GoDaddy SMTP server for konektly.ca domain
 export const getEmailTransporter = () => {
   const port = parseInt(process.env.SMTP_PORT || '587');
   const useSSL = port === 465;
   
-  // For Outlook/Office365 emails, use smtp.office365.com
+  // Default to GoDaddy SMTP server (smtpout.secureserver.net)
+  // For Outlook/Office365 emails, use smtp.office365.com (requires SMTP AUTH enabled)
   // For GoDaddy emails, use smtpout.secureserver.net
-  const smtpHost = process.env.SMTP_HOST || 'smtp.office365.com';
+  const smtpHost = process.env.SMTP_HOST || 'smtpout.secureserver.net';
   
   const smtpConfig = {
     host: smtpHost,
@@ -29,6 +31,16 @@ export const getEmailTransporter = () => {
       minVersion: 'TLSv1.2',
     }; 
   }
+
+  // Log SMTP configuration (without password) for debugging
+  console.log('SMTP Configuration:', {
+    host: smtpHost,
+    port: port,
+    secure: useSSL,
+    user: smtpConfig.auth.user,
+    usingGoDaddy: smtpHost.includes('secureserver'),
+    usingOffice365: smtpHost.includes('office365')
+  });
 
   return nodemailer.createTransport(smtpConfig);
 };

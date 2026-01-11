@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { FiUsers, FiUserCheck, FiBriefcase, FiSearch, FiFilter, FiMail, FiPhone, FiCheckCircle, FiXCircle, FiClock } from 'react-icons/fi';
+import { FiUsers, FiUserCheck, FiBriefcase, FiSearch, FiTrash2, FiMail, FiPhone, FiX, FiAlertTriangle } from 'react-icons/fi';
 import { getAdminToken } from '@/lib/adminAuth';
 
 export default function UsersPage() {
@@ -20,6 +20,9 @@ export default function UsersPage() {
     business: 0,
     provider: 0
   });
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -85,6 +88,48 @@ export default function UsersPage() {
   const handleRoleFilter = (role) => {
     setSelectedRole(role);
     setCurrentPage(1);
+  };
+
+  const handleDeleteClick = (user) => {
+    setUserToDelete(user);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!userToDelete) return;
+
+    setDeleteLoading(true);
+    try {
+      const token = getAdminToken();
+      if (!token) {
+        setError('Not authenticated');
+        setDeleteLoading(false);
+        return;
+      }
+
+      const response = await fetch(`/api/admin/users/${userToDelete.role}/${userToDelete.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setShowDeleteModal(false);
+        setUserToDelete(null);
+        fetchUsers();
+      } else {
+        alert(data.message || 'Failed to delete user');
+      }
+    } catch (err) {
+      console.error('Error deleting user:', err);
+      alert('An error occurred while deleting user');
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   const formatDate = (date) => {
@@ -288,12 +333,21 @@ export default function UsersPage() {
                         {getStatusBadge(user)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <Link
-                          href={`/admin/users/${user.role}/${user.id}`}
-                          className="inline-block px-3 py-1.5 bg-black text-white text-xs font-medium rounded-lg hover:bg-gray-800 transition-colors"
-                        >
-                          Detail
-                        </Link>
+                        <div className="flex items-center gap-2">
+                          <Link
+                            href={`/admin/users/${user.role}/${user.id}`}
+                            className="inline-block px-3 py-1.5 bg-black text-white text-xs font-medium rounded-lg hover:bg-gray-800 transition-colors"
+                          >
+                            Detail
+                          </Link>
+                          <button
+                            onClick={() => handleDeleteClick(user)}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-red-600 text-white text-xs font-medium rounded-lg hover:bg-red-700 transition-colors cursor-pointer"
+                          >
+                            <FiTrash2 className="w-3 h-3" />
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -332,6 +386,75 @@ export default function UsersPage() {
           </>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && userToDelete && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 relative" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => {
+                setShowDeleteModal(false);
+                setUserToDelete(null);
+              }}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+            >
+              <FiX className="w-5 h-5" />
+            </button>
+
+            <div className="flex justify-center mb-4">
+              <div className="w-12 h-12 rounded-full flex items-center justify-center bg-red-100">
+                <FiAlertTriangle className="w-6 h-6 text-red-500" />
+              </div>
+            </div>
+
+            <h3 className="text-lg font-bold text-gray-900 text-center mb-2">
+              Delete User
+            </h3>
+
+            <p className="text-sm text-gray-600 text-center mb-4">
+              Are you sure you want to delete <span className="font-semibold">{userToDelete.name}</span>? 
+              This action cannot be undone and all associated data will be permanently removed.
+            </p>
+
+            <div className="bg-gray-50 rounded-lg p-3 mb-6">
+              <div className="flex items-center gap-3">
+                <div className="flex-shrink-0 h-10 w-10 bg-black rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-medium">
+                    {userToDelete.name.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-900">{userToDelete.name}</p>
+                  <p className="text-xs text-gray-500">{userToDelete.email}</p>
+                  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium mt-1 ${getRoleBadgeColor(userToDelete.role)}`}>
+                    {userToDelete.role.charAt(0).toUpperCase() + userToDelete.role.slice(1)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setUserToDelete(null);
+                }}
+                className="cursor-pointer flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+                disabled={deleteLoading}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteConfirm}
+                disabled={deleteLoading}
+                className="cursor-pointer flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+              >
+                {deleteLoading ? 'Deleting...' : 'Delete User'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

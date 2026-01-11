@@ -8,7 +8,8 @@ export async function GET(request, { params }) {
   try {
     await connectToDatabase();
 
-    const { role, id } = params;
+    // Await params for Next.js 15
+    const { role, id } = await params;
 
     let user = null;
 
@@ -133,3 +134,51 @@ export async function GET(request, { params }) {
   }
 }
 
+export async function DELETE(request, { params }) {
+  try {
+    await connectToDatabase();
+
+    // Await params for Next.js 15
+    const { role, id } = await params;
+
+    let result = null;
+
+    switch (role) {
+      case 'client':
+        result = await Client.findByIdAndDelete(id);
+        break;
+
+      case 'business':
+        result = await Business.findByIdAndDelete(id);
+        break;
+
+      case 'provider':
+        result = await Provider.findByIdAndDelete(id);
+        break;
+
+      default:
+        return NextResponse.json(
+          { success: false, message: 'Invalid role' },
+          { status: 400 }
+        );
+    }
+
+    if (!result) {
+      return NextResponse.json(
+        { success: false, message: 'User not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: `${role.charAt(0).toUpperCase() + role.slice(1)} deleted successfully`
+    });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    return NextResponse.json(
+      { success: false, message: 'Server error', error: error.message },
+      { status: 500 }
+    );
+  }
+}

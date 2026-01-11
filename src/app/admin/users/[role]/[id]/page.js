@@ -22,7 +22,7 @@ import {
 import { getAdminToken } from '@/lib/adminAuth';
 import ConfirmationModal from '@/components/admin/ConfirmationModal';
 
-export default function UserDetailPage() {
+export default function UserDetailPage() { 
   const router = useRouter();
   const params = useParams();
   const role = params?.role;
@@ -661,4 +661,5 @@ export default function UserDetailPage() {
     </div>
   );
 }
+
 

@@ -7,10 +7,9 @@ export const getEmailTransporter = () => {
   const port = parseInt(process.env.SMTP_PORT || '587');
   const useSSL = port === 465;
   
-  // Default to GoDaddy SMTP server (smtpout.secureserver.net)
-  // For Outlook/Office365 emails, use smtp.office365.com (requires SMTP AUTH enabled)
+  // For Outlook/Office365 emails, use smtp.office365.com
   // For GoDaddy emails, use smtpout.secureserver.net
-  const smtpHost = process.env.SMTP_HOST || 'smtpout.secureserver.net';
+  const smtpHost = process.env.SMTP_HOST || 'smtp.office365.com';
   
   const smtpConfig = {
     host: smtpHost,

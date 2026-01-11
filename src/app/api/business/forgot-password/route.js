@@ -36,7 +36,7 @@ export async function POST(request) {
     // Send password reset email
     try {
       const transporter = getEmailTransporter();
-      const fromEmail = process.env.SMTP_USER || 'hello@konektly.ca';
+      const fromEmail = process.env.SMTP_USER || process.env.EMAIL_USER || 'mudassarhus667788@gmail.com';
 
       const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/business-forgot-password?token=${resetToken}`;
 

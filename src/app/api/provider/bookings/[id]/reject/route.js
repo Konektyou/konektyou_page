@@ -108,7 +108,7 @@ export async function POST(request, { params }) {
         });
 
         const mailOptions = {
-          from: 'hello@konektly.ca',
+          from: process.env.SMTP_USER || process.env.EMAIL_USER || 'mudassarhus667788@gmail.com',
           to: client.email,
           subject: `Booking Request Declined - ${provider?.name || 'Provider'}`,
           html: `
@@ -209,8 +209,8 @@ export async function POST(request, { params }) {
       // If authentication failed, log a helpful message
       if (emailError?.code === 'EAUTH' || emailError?.responseCode === 535) {
         console.error('SMTP Authentication Failed - Please verify:');
-        console.error('1. Email account exists: hello@konektly.ca');
-        console.error('2. Password is correct in GoDaddy account');
+        console.error('1. Email account exists: mudassarhus667788@gmail.com');
+        console.error('2. Gmail App Password is correct (not regular password)');
         console.error('3. Try port 465 (SSL) if port 587 fails');
       }
     }

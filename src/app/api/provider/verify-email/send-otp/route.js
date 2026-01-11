@@ -60,7 +60,7 @@ export async function POST(request) {
     // Send OTP email
     try {
       const transporter = getEmailTransporter();
-      const fromEmail = process.env.SMTP_USER || 'hello@konektly.ca';
+      const fromEmail = process.env.SMTP_USER || process.env.EMAIL_USER || 'mudassarhus667788@gmail.com';
 
       const mailOptions = {
         from: fromEmail,

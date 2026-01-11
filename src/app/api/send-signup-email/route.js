@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { appendJsonRecord } from '@/lib/storage';
 import { connectToDatabase } from '@/lib/mongodb';
 import ClientSignup from '@/models/ClientSignup';
-import nodemailer from 'nodemailer';
+import { getEmailTransporter } from '@/lib/emailConfig';
 
 export async function POST(request) {
   try {
@@ -22,7 +22,7 @@ export async function POST(request) {
     // Send email after successful database save
     try {
       const transporter = getEmailTransporter();
-      const fromEmail = process.env.SMTP_USER || 'hello@konektly.ca';
+      const fromEmail = process.env.SMTP_USER || process.env.EMAIL_USER || 'mudassarhus667788@gmail.com';
 
       // Format time display
       const timeDisplay = {

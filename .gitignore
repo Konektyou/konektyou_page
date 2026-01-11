@@ -10,6 +10,10 @@
 !.yarn/releases
 !.yarn/versions
 
+# Next.js
+.next
+out
+
 # testing
 /coverage
 

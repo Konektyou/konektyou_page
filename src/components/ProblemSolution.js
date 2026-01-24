@@ -1,7 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
-
 export default function ProblemSolution() {
   const problems = [
     'People struggle to find reliable help nearby when they need it',
@@ -10,11 +8,7 @@ export default function ProblemSolution() {
   ];
 
   return (
-    <motion.section
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      transition={{ duration: 0.8 }}
-      viewport={{ once: true, margin: "-100px" }}
+    <section
       id="problem-solution"
       className="py-12 sm:py-16 lg:py-20 bg-gray-50 relative overflow-hidden"
     >
@@ -32,34 +26,17 @@ export default function ProblemSolution() {
 
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative">
         {/* Problems Section */}
-        <motion.div
-          initial={{ y: 50, opacity: 0 }}
-          whileInView={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          viewport={{ once: true }}
-          className="mb-12 sm:mb-16"
-        >
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            viewport={{ once: true }}
-            className="text-center mb-8 sm:mb-12"
-          >
+        <div className="mb-12 sm:mb-16">
+          <div className="text-center mb-8 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-black mb-6 sm:mb-8 leading-tight">
               The Problems We Solve
             </h2>
-          </motion.div>
+          </div>
 
           <div className="grid md:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-16">
             {problems.map((problem, index) => (
-              <motion.div
+              <div
                 key={index}
-                initial={{ y: 50, opacity: 0 }}
-                whileInView={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -5, scale: 1.02 }}
                 className="bg-white rounded-xl sm:rounded-2xl p-6 sm:p-8 border border-gray-200 hover:shadow-lg transition-shadow duration-300"
               >
                 <div className="flex items-start mb-4">
@@ -72,26 +49,14 @@ export default function ProblemSolution() {
                     {problem}
                   </p>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
-        </motion.div>
+        </div>
 
         {/* Solution Section */}
-        <motion.div
-          initial={{ y: 50, opacity: 0 }}
-          whileInView={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          viewport={{ once: true }}
-          className="text-center bg-white rounded-2xl sm:rounded-3xl p-8 sm:p-12 lg:p-16 border-2 border-black/30 shadow-xl"
-        >
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.7 }}
-            viewport={{ once: true }}
-            className="mb-6 sm:mb-8"
-          >
+        <div className="text-center bg-white rounded-2xl sm:rounded-3xl p-8 sm:p-12 lg:p-16 border-2 border-black/30 shadow-xl">
+          <div className="mb-6 sm:mb-8">
             <div className="inline-flex items-center px-4 py-2 bg-green-100 rounded-full text-sm sm:text-base font-medium text-green-800 mb-6 sm:mb-8">
               <span className="w-2 h-2 bg-green-600 rounded-full mr-2"></span>
               The Solution
@@ -99,23 +64,16 @@ export default function ProblemSolution() {
             <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
               Konektly solves all three problems instantly with real-time geo-location talent.
             </h3>
-          </motion.div>
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-            viewport={{ once: true }}
-            className="mt-6 sm:mt-8"
-          >
+          </div>
+          <div className="mt-6 sm:mt-8">
             <div className="w-16 h-16 sm:w-20 sm:h-20 bg-black rounded-full flex items-center justify-center mx-auto">
-              <svg className="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-8 w-8 sm:w-10 sm:h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </div>
-    </motion.section>
+    </section>
   );
 }
-

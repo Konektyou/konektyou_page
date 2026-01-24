@@ -9,6 +9,8 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 body {
@@ -18,6 +20,8 @@ body {
   line-height: 1.6;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /* Custom scrollbar */

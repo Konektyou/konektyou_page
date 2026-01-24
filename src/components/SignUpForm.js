@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 
 export default function SignUpForm() {
   const [formData, setFormData] = useState({
@@ -25,11 +24,7 @@ export default function SignUpForm() {
   };
 
   return (
-    <motion.section
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      transition={{ duration: 0.8 }}
-      viewport={{ once: true, margin: "-100px" }}
+    <section
       className="py-12 sm:py-16 lg:py-20 bg-white relative overflow-hidden"
     >
       {/* Background Elements */}
@@ -44,75 +39,33 @@ export default function SignUpForm() {
         </svg>
       </div>
 
-      <motion.div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 relative">
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 relative">
         {/* Header Section */}
-        <motion.div
-          initial={{ y: 50, opacity: 0 }}
-          whileInView={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          viewport={{ once: true }}
-          className="text-center mb-12 sm:mb-16"
-        >
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center px-3 sm:px-4 py-2 bg-gray-100 rounded-full text-xs sm:text-sm font-medium text-gray-700 mb-4 sm:mb-6 shadow-sm"
-          >
+        <div className="text-center mb-12 sm:mb-16">
+          <div className="inline-flex items-center px-3 sm:px-4 py-2 bg-gray-100 rounded-full text-xs sm:text-sm font-medium text-gray-700 mb-4 sm:mb-6 shadow-sm">
             <span className="w-2 h-2 bg-black rounded-full mr-2"></span>
             Why Konektly is Better
-          </motion.div>
-          <motion.h2
-            initial={{ y: 30, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            viewport={{ once: true }}
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-black mb-4 sm:mb-6 leading-tight px-2"
-          >
+          </div>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-black mb-4 sm:mb-6 leading-tight px-2">
             The Future of <span className="text-gray-600">Service</span> <br />
             Connections
-          </motion.h2>
-          <motion.p
-            initial={{ y: 20, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            viewport={{ once: true }}
-            className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4"
-          >
+          </h2>
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4">
             Hyperlocal, real-time service connections that put you in control.
             See who's available right now, right where you are.
-          </motion.p>
-        </motion.div>
+          </p>
+        </div>
 
         {/* Comparison Section - Full Width */}
-        <motion.div
-          initial={{ y: 50, opacity: 0 }}
-          whileInView={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          viewport={{ once: true }}
-          className="mb-12 sm:mb-16"
-        >
-          <motion.div
-            initial={{ y: 30, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center mb-8 sm:mb-12"
-          >
+        <div className="mb-12 sm:mb-16">
+          <div className="text-center mb-8 sm:mb-12">
             <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black mb-4">Why Konektly is Better</h3>
             <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
               See how we compare to traditional service platforms
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ y: 30, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.7 }}
-            viewport={{ once: true }}
-            className="grid md:grid-cols-3 gap-6 sm:gap-8"
-          >
+          <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
             {/* Connection Speed */}
             <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center mb-4">
@@ -197,24 +150,12 @@ export default function SignUpForm() {
                 </div>
               </div>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
         {/* Form Section - Centered */}
-        <motion.div
-          initial={{ y: 50, opacity: 0 }}
-          whileInView={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          viewport={{ once: true }}
-          className="max-w-2xl mx-auto"
-        >
-          <motion.div
-            initial={{ y: 30, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.9 }}
-            viewport={{ once: true }}
-            className="bg-gray-50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-gray-200"
-          >
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-gray-50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-gray-200">
             {!isSubmitted ? (
               <form onSubmit={handleSignUpSubmit} className="space-y-4 sm:space-y-6">
                 <div className="text-center mb-6 sm:mb-8">
@@ -275,14 +216,12 @@ export default function SignUpForm() {
                   </select>
                 </div>
 
-                 <motion.button
-                   whileHover={{ scale: 1.02, y: -2 }}
-                   whileTap={{ scale: 0.98 }}
+                 <button
                    type="submit"
                    className="w-full bg-black text-white py-3 sm:py-4 rounded-lg sm:rounded-xl font-semibold text-base sm:text-lg hover:bg-gray-800 transition-colors duration-300 shadow-lg hover:shadow-xl"
                  >
                    Join the Revolution
-                 </motion.button>
+                 </button>
 
                 <p className="text-xs text-gray-500 text-center">
                   By joining, you agree to receive updates about Konektly. Unsubscribe anytime.
@@ -305,9 +244,9 @@ export default function SignUpForm() {
                 </div>
               </div>
             )}
-          </motion.div>
-        </motion.div>
-      </motion.div>
-    </motion.section>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }

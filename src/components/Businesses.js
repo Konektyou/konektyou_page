@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { FiAlertTriangle, FiDollarSign } from 'react-icons/fi';
 import { FaCheck } from 'react-icons/fa';
@@ -12,11 +11,7 @@ export default function Businesses() {
     router.push('/provider-signup');
   };
   return (
-    (<motion.section
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      transition={{ duration: 0.8 }}
-      viewport={{ once: true, margin: "-100px" }}
+    <section
       id="businesses"
       className="py-12 sm:py-16 lg:py-20 bg-white relative overflow-hidden"
     >
@@ -34,68 +29,25 @@ export default function Businesses() {
 
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative">
         {/* Header Section */}
-        <motion.div
-          initial={{ y: 50, opacity: 0 }}
-          whileInView={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          viewport={{ once: true }}
-          className="text-center mb-12 sm:mb-16"
-        >
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center px-3 sm:px-4 py-2 bg-gray-100 rounded-full text-xs sm:text-sm font-medium text-gray-700 mb-4 sm:mb-6 shadow-sm"
-          >
+        <div className="text-center mb-12 sm:mb-16">
+          <div className="inline-flex items-center px-3 sm:px-4 py-2 bg-gray-100 rounded-full text-xs sm:text-sm font-medium text-gray-700 mb-4 sm:mb-6 shadow-sm">
             <span className="w-2 h-2 bg-black rounded-full mr-2"></span>
             For Businesses
-          </motion.div>
-          <motion.h2
-            initial={{ y: 30, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            viewport={{ once: true }}
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-black mb-4 sm:mb-6 leading-tight px-2"
-          >
+          </div>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-black mb-4 sm:mb-6 leading-tight px-2">
             Keep Your Business <br />
             <span className="text-gray-600">Running Smoothly</span>
-          </motion.h2>
-          <motion.p
-            initial={{ y: 20, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            viewport={{ once: true }}
-            className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed px-4"
-          >
+          </h2>
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed px-4">
             Reliable help is available in minutes, not weeks. <br /> No hiring process.
-          </motion.p>
-        </motion.div>
+          </p>
+        </div>
 
         {/* Main Content Grid */}
-        <motion.div
-          initial={{ y: 50, opacity: 0 }}
-          whileInView={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          viewport={{ once: true }}
-          className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center mb-12 sm:mb-16"
-        >
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center mb-12 sm:mb-16">
           {/* Left Content - Benefits */}
-          <motion.div
-            initial={{ x: -50, opacity: 0 }}
-            whileInView={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            viewport={{ once: true }}
-            className="space-y-6 sm:space-y-8"
-          >
-            <motion.div
-              initial={{ y: 30, opacity: 0 }}
-              whileInView={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.7 }}
-              viewport={{ once: true }}
-              className="space-y-4 sm:space-y-6 cursor-pointer group"
-              onClick={handleCardClick}
-            >
+          <div className="space-y-6 sm:space-y-8">
+            <div className="space-y-4 sm:space-y-6 cursor-pointer group" onClick={handleCardClick}>
               <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-black flex items-center group-hover:text-black transition-colors">
                 <div className="w-6 h-6 sm:w-8 sm:h-8 mr-3 text-red-500 border-3 border-red-500 rounded-full p-1 flex items-center justify-center group-hover:bg-red-100 transition-colors">
                   <FiAlertTriangle className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -105,16 +57,9 @@ export default function Businesses() {
               <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed group-hover:text-gray-800 transition-colors">
                 Fill critical shifts instantly when staff call in sick.
               </p>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ y: 30, opacity: 0 }}
-              whileInView={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
-              viewport={{ once: true }}
-              className="space-y-4 sm:space-y-6 cursor-pointer group"
-              onClick={handleCardClick}
-            >
+            <div className="space-y-4 sm:space-y-6 cursor-pointer group" onClick={handleCardClick}>
               <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-black flex items-center group-hover:text-black transition-colors">
                 <div className="w-6 h-6 sm:w-8 sm:h-8 mr-3 text-green-500 border-3 border-green-500 rounded-full p-1 flex items-center justify-center group-hover:bg-green-100 transition-colors">
                   <FiDollarSign className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -124,16 +69,9 @@ export default function Businesses() {
               <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed group-hover:text-gray-800 transition-colors">
                 Never turn away customers due to staffing shortages.
               </p>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ y: 30, opacity: 0 }}
-              whileInView={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.9 }}
-              viewport={{ once: true }}
-              className="space-y-4 sm:space-y-6 cursor-pointer group"
-              onClick={handleCardClick}
-            >
+            <div className="space-y-4 sm:space-y-6 cursor-pointer group" onClick={handleCardClick}>
               <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-black flex items-center group-hover:text-black transition-colors">
                 <div className="w-6 h-6 sm:w-8 sm:h-8 mr-3 text-blue-500 border-3 border-blue-500 rounded-full p-1 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
                   <FaCheck className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -143,18 +81,12 @@ export default function Businesses() {
               <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed group-hover:text-gray-800 transition-colors">
                 Pre-screened, background-checked professionals ready to maintain your standards.
               </p>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
           {/* Right Content - Visual Elements */}
-          <motion.div
-            initial={{ x: 50, opacity: 0 }}
-            whileInView={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.7 }}
-            viewport={{ once: true }}
-            className="relative order-first lg:order-last"
-          >
-            <motion.div className="bg-gray-50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 h-64 sm:h-80 lg:h-96 relative overflow-hidden">
+          <div className="relative order-first lg:order-last">
+            <div className="bg-gray-50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 h-64 sm:h-80 lg:h-96 relative overflow-hidden">
               {/* Business Dashboard Visualization */}
               <div className="absolute inset-0 p-4 sm:p-6 lg:p-8">
                 {/* Header Bar */}
@@ -216,11 +148,11 @@ export default function Businesses() {
                   </div>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
-        </motion.div>
+            </div>
+          </div>
+        </div>
 
       </div>
-    </motion.section>)
+    </section>
   );
 }

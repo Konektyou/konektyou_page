@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { motion, AnimatePresence } from 'framer-motion';
 
 // Create a dynamic map component that only renders on client
 const DynamicMap = dynamic(() => import('./MapComponent'), {
@@ -72,12 +71,7 @@ export default function Hero() {
   const torontoCenter = [43.7000, -79.4000];
 
   return (
-    <motion.section
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.8 }}
-      className="h-[90vh] w-full relative overflow-hidden bg-gray-100"
-    >
+    <section className="h-[90vh] w-full relative overflow-hidden bg-gray-100">
       {/* Full-screen 3D Map Background */}
       <div className="absolute inset-0 z-0 h-full w-full">
         {isMounted && <DynamicMap 
@@ -87,49 +81,33 @@ export default function Hero() {
       </div>
 
       {/* Overlay Content */}
-      <div className="relative z-10 min-h-screen flex flex-col justify-start items-start px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center mt-20">
-          {/* Animated Text Sequence */}
-          <motion.div
-            key={currentTextIndex}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.6 }}
-            className="mb-8 sm:mb-12 h-32 flex items-center justify-center"
-          >
+      <div className="relative z-10 flex flex-col justify-start items-start px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center mt-20 w-full">
+          {/* Text Sequence */}
+          <div className="mb-8 sm:mb-12 h-32 flex items-center justify-center">
             <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-black mb-4 sm:mb-6 leading-tight drop-shadow-lg text-center">
               {textSequence[currentTextIndex]}
             </h1>
-          </motion.div>
+          </div>
 
           {/* Role Selection Buttons */}
-          <motion.div
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 1 }}
-            className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mb-8"
-          >
-            <motion.button
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mb-8">
+            <button
               onClick={() => handleRoleSelect('client')}
               className="cursor-pointer bg-white/50 backdrop-blur-sm text-black px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white transition-all shadow-lg border border-gray-200 focus:outline-none focus:ring-0"
             >
               For Clients
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
+            </button>
+            <button
               onClick={() => handleRoleSelect('provider')}
               className="cursor-pointer bg-white/50 backdrop-blur-sm text-black px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white transition-all shadow-lg border border-gray-200 focus:outline-none focus:ring-0"
             >
               For Service Providers
-            </motion.button>
-          </motion.div>
+            </button>
+          </div>
 
         </div>
       </div>
-    </motion.section>
+    </section>
   );
 }

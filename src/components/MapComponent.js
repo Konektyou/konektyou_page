@@ -9,7 +9,7 @@ import 'leaflet/dist/leaflet.css';
 function MapCenter({ center, zoom }) {
   const map = useMap();
   useEffect(() => {
-    if (center) {
+    if (center && map && map.setView) {
       map.setView(center, zoom || 12);
     }
   }, [center, zoom, map]);

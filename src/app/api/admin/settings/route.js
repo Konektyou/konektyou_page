@@ -19,7 +19,8 @@ export async function GET(request) {
       success: true,
       settings: {
         commissionRate: settings.commissionRate,
-        taxRate: settings.taxRate
+        taxRate: settings.taxRate,
+        clientSubscriptionPrice: settings.clientSubscriptionPrice || 50
       }
     });
   } catch (error) {
@@ -42,7 +43,7 @@ export async function PUT(request) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { commissionRate, taxRate } = await request.json();
+    const { commissionRate, taxRate, clientSubscriptionPrice } = await request.json();
 
     const settings = await AdminSettings.getSettings();
 
@@ -70,6 +71,18 @@ export async function PUT(request) {
       settings.taxRate = rate;
     }
 
+    // Update client subscription price if provided
+    if (clientSubscriptionPrice !== undefined && clientSubscriptionPrice !== null) {
+      const price = parseFloat(clientSubscriptionPrice);
+      if (isNaN(price) || price < 0) {
+        return NextResponse.json(
+          { success: false, message: 'Subscription price must be a positive number' },
+          { status: 400 }
+        );
+      }
+      settings.clientSubscriptionPrice = price;
+    }
+
     // Note: updatedBy could be extracted from token if needed, but for now we'll leave it null
     // since admin uses simple token, not JWT
     await settings.save();
@@ -79,7 +92,8 @@ export async function PUT(request) {
       message: 'Settings updated successfully',
       settings: {
         commissionRate: settings.commissionRate,
-        taxRate: settings.taxRate
+        taxRate: settings.taxRate,
+        clientSubscriptionPrice: settings.clientSubscriptionPrice || 50
       }
     });
   } catch (error) {

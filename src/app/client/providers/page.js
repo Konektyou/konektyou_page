@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { FiSearch, FiFilter, FiMessageCircle, FiEye, FiLoader, FiMapPin, FiStar, FiClock, FiCheckCircle, FiNavigation, FiAlertCircle } from 'react-icons/fi';
 import { getClientToken } from '@/lib/clientAuth';
 import MapComponent from '@/components/MapComponent';
+import PremiumSubscriptionModal from '@/components/client/PremiumSubscriptionModal';
 import dynamic from 'next/dynamic';
 
 export default function ProvidersPage() {
@@ -25,11 +26,15 @@ export default function ProvidersPage() {
   const [serviceRange, setServiceRange] = useState(10); // Default 10km
   const [showMap, setShowMap] = useState(false); // Will be set to true when location is available
   const [selectedProvider, setSelectedProvider] = useState(null); // Selected provider for details panel
+  const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [pendingBooking, setPendingBooking] = useState(null); // { providerId, serviceId }
 
   useEffect(() => {
     requestUserLocation();
     fetchProviders();
     fetchClientBookings();
+    checkSubscriptionStatus();
 
     // Refresh bookings when page becomes visible (e.g., returning from booking page)
     const handleVisibilityChange = () => {
@@ -40,6 +45,14 @@ export default function ProvidersPage() {
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('focus', fetchClientBookings);
+
+    // Check for subscription success from Stripe redirect
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('subscription') === 'success') {
+      checkSubscriptionStatus();
+      // Clean up URL
+      window.history.replaceState({}, '', window.location.pathname);
+    }
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
@@ -224,12 +237,45 @@ export default function ProvidersPage() {
     setServices(filtered);
   };
 
+  const checkSubscriptionStatus = async () => {
+    try {
+      const token = getClientToken();
+      if (!token) return;
+
+      const response = await fetch('/api/client/subscription', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setHasActiveSubscription(data.isActive || false);
+      }
+    } catch (err) {
+      console.error('Error checking subscription:', err);
+    }
+  };
+
   const handleStartChat = (providerId) => {
     router.push(`/client/chat/${providerId}`);
   };
 
   const handleBookNow = (providerId, serviceId) => {
-    router.push(`/client/book-provider/${providerId}?serviceId=${serviceId}`);
+    if (!hasActiveSubscription) {
+      setPendingBooking({ providerId, serviceId });
+      setShowSubscriptionModal(true);
+    } else {
+      router.push(`/client/book-provider/${providerId}?serviceId=${serviceId}`);
+    }
+  };
+
+  const handleSubscriptionSuccess = () => {
+    setHasActiveSubscription(true);
+    if (pendingBooking) {
+      router.push(`/client/book-provider/${pendingBooking.providerId}?serviceId=${pendingBooking.serviceId}`);
+      setPendingBooking(null);
+    }
   };
 
 
@@ -514,6 +560,7 @@ export default function ProvidersPage() {
                 <MapComponent
                   userLocation={userLocation}
                   serviceRange={serviceRange}
+                  fullScreen={false}
                   activeProviders={services.map(service => ({
                     id: service.providerId,
                     name: service.providerName,
@@ -683,6 +730,16 @@ export default function ProvidersPage() {
           </div>
         </div>
       )}
+
+      {/* Premium Subscription Modal */}
+      <PremiumSubscriptionModal
+        isOpen={showSubscriptionModal}
+        onClose={() => {
+          setShowSubscriptionModal(false);
+          setPendingBooking(null);
+        }}
+        onSubscribeSuccess={handleSubscriptionSuccess}
+      />
     </div>
   );
 }

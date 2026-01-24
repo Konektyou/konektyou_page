@@ -10,7 +10,7 @@ export default function ClientProfilePage() {
     phone: '+1 234-567-8900',
     address: '123 Main St, Toronto, ON',
   });
-
+ 
   return (
     <div className="space-y-6">
       <div>
@@ -18,7 +18,7 @@ export default function ClientProfilePage() {
         <p className="text-gray-600 mt-1">Manage your account information</p>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 max-w-2xl">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 max-w-full">
         <div className="space-y-6">
           {/* Profile Picture */}
           <div className="flex items-center gap-6">

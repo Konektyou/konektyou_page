@@ -21,7 +21,8 @@ export default function MapComponent({
   torontoCenter = [43.6532, -79.3832],
   userLocation = null,
   serviceRange = 10,
-  onProviderClick = null
+  onProviderClick = null,
+  fullScreen = true
 }) {
   const [isClient, setIsClient] = useState(false);
   const [isMapReady, setIsMapReady] = useState(false);
@@ -110,34 +111,48 @@ export default function MapComponent({
     );
   }
 
+  const containerStyle = fullScreen
+    ? { height: '100vh', width: '100vw', margin: 0, padding: 0, overflow: 'hidden', position: 'fixed', top: 0, left: 0 }
+    : { height: '100%', width: '100%', position: 'relative' };
+
+  const mapStyle = fullScreen
+    ? { height: '100vh', width: '100vw', background: '#f8fafc', margin: 0, padding: 0 }
+    : { height: '100%', width: '100%', background: '#f8fafc' };
+
   return (
-    <div className="relative h-full w-full bg-gray-100">
+    <div style={containerStyle}>
       <style jsx global>{`
         .leaflet-control-container {
+          display: block !important;
+        }
+        .leaflet-control-zoom {
           display: none !important;
         }
         .leaflet-control-attribution {
           display: none !important;
         }
-        .leaflet-control-zoom {
-          display: none !important;
-        }
-        .leaflet-bottom {
-          display: none !important;
-        }
-        .leaflet-top {
-          display: none !important;
-        }
         .leaflet-container {
           background: #f8fafc !important;
+          height: 100% !important;
+          width: 100% !important;
         }
+        ${fullScreen ? `
+        body {
+          overflow: hidden !important;
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        html {
+          overflow: hidden !important;
+          margin: 0 !important;
+          padding: 0 !important;
+        }` : ''}
       `}</style>
       <MapContainer
         center={mapCenter}
         zoom={userLocation ? 12 : 12}
-        style={{ height: '100%', width: '100%', background: '#f8fafc' }}
-        className="rounded-2xl"
-        zoomControl={true}
+        style={mapStyle}
+        zoomControl={false}
         attributionControl={false}
       >
       <MapCenter center={mapCenter} zoom={userLocation ? 12 : 12} />

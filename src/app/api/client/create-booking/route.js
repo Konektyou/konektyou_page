@@ -53,6 +53,26 @@ export async function POST(request) {
       );
     }
 
+    // Check if client has active premium subscription for current month
+    // Once subscribed in a month, they can book unlimited providers without paying again
+    const now = new Date();
+    const hasActiveSubscription = 
+      client.subscription?.status === 'active' &&
+      client.subscription?.planType === 'premium' &&
+      (!client.subscription?.endDate || new Date(client.subscription.endDate) > now) &&
+      (!client.subscription?.startDate || new Date(client.subscription.startDate) <= now);
+
+    if (!hasActiveSubscription) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: 'Premium subscription required to book talent. Please subscribe to continue.',
+          requiresSubscription: true
+        },
+        { status: 403 }
+      );
+    }
+
     // Verify provider exists and is available
     const provider = await Provider.findById(providerId);
     if (!provider || !provider.isActive || provider.isBanned) {

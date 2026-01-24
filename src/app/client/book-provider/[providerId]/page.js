@@ -430,15 +430,15 @@ export default function BookProviderPage() {
     : null;
 
   return (
-    <div className="max-w-full space-y-6">
+    <div className="max-w-full space-y-6 px-6 pt-4">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <button
+        {/* <button
           onClick={() => router.back()}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
         >
           <FiArrowLeft className="w-5 h-5" />
-        </button>
+        </button> */}
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Book Service</h1>
           <p className="text-gray-600 mt-1">{provider?.name} • {selectedService?.name || 'Service'}</p>

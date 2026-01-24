@@ -15,7 +15,8 @@ export async function POST(request, { params }) {
       );
     }
 
-    const { id } = params;
+    // Await params for Next.js 15
+    const { id } = await params;
 
     const business = await Business.findById(id);
 

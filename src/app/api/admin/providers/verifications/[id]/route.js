@@ -15,7 +15,8 @@ export async function GET(request, { params }) {
       );
     }
 
-    const { id } = params;
+    // Await params for Next.js 15
+    const { id } = await params;
 
     const provider = await Provider.findById(id).select('-password');
 

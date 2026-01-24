@@ -83,7 +83,11 @@ export default function AdminSidebar({ isOpen, setIsOpen }) {
     {
       title: 'Settings',
       icon: FiSettings,
-      href: '/admin/settings'
+      href: '/admin/settings',
+      submenu: [
+        { title: 'General Settings', href: '/admin/settings' },
+        { title: 'Subscription Pricing', href: '/admin/settings/subscription' },
+      ]
     },
   ];
 

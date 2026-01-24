@@ -6,10 +6,8 @@ import Link from 'next/link';
 import { FiMail, FiLock, FiAlertCircle, FiLoader, FiEye, FiEyeOff, FiArrowLeft } from 'react-icons/fi';
 import { setProviderAuth } from '@/lib/providerAuth';
 import { setClientAuth } from '@/lib/clientAuth';
-import { setBusinessAuth } from '@/lib/businessAuth';
 import { isProviderAuthenticated } from '@/lib/providerAuth';
 import { isClientAuthenticated } from '@/lib/clientAuth';
-import { isBusinessAuthenticated } from '@/lib/businessAuth';
 
 function LoginContent() {
   const router = useRouter();
@@ -18,7 +16,7 @@ function LoginContent() {
   
   // Set default tab based on URL parameter, fallback to 'client'
   const getInitialTab = () => {
-    if (roleFromUrl === 'client' || roleFromUrl === 'business' || roleFromUrl === 'provider') {
+    if (roleFromUrl === 'client' || roleFromUrl === 'provider') {
       return roleFromUrl;
     }
     return 'client';
@@ -35,13 +33,12 @@ function LoginContent() {
 
   const tabs = [
     { id: 'client', label: 'Client' },
-    { id: 'business', label: 'Business' },
     { id: 'provider', label: 'Provider' }
   ];
 
   useEffect(() => {
     // Set active tab from URL parameter if present
-    if (roleFromUrl === 'client' || roleFromUrl === 'business' || roleFromUrl === 'provider') {
+    if (roleFromUrl === 'client' || roleFromUrl === 'provider') {
       setActiveTab(roleFromUrl);
     }
     
@@ -52,10 +49,6 @@ function LoginContent() {
     }
     if (isClientAuthenticated()) {
       router.push('/client');
-      return;
-    }
-    if (isBusinessAuthenticated()) {
-      router.push('/business');
       return;
     }
   }, [router, roleFromUrl]);
@@ -109,9 +102,6 @@ function LoginContent() {
         } else if (activeTab === 'client') {
           setClientAuth(data.token, data.client);
           router.push('/client');
-        } else if (activeTab === 'business') {
-          setBusinessAuth(data.token, data.business);
-          router.push('/business');
         }
       } else {
         setError(data.message || 'Login failed');
@@ -128,8 +118,6 @@ function LoginContent() {
     switch (activeTab) {
       case 'client':
         return 'Client';
-      case 'business':
-        return 'Business';
       case 'provider':
         return 'Provider';
       default:

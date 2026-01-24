@@ -77,6 +77,7 @@ export default function Hero() {
         {isMounted && <DynamicMap 
           activeProviders={activeProviders} 
           torontoCenter={torontoCenter}
+          fullScreen={false}
         />}
       </div>
 

@@ -54,27 +54,27 @@ export default function AdminSidebar({ isOpen, setIsOpen }) {
       href: '/admin/payments',
       exact: false
     },
-    {
-      title: 'Business Controls',
-      icon: FiBriefcase,
-      href: '/admin/businesses',
-      submenu: [
-        { title: 'Verifications', href: '/admin/businesses/verifications' },
-        { title: 'Subscriptions', href: '/admin/businesses/subscriptions' },
-        { title: 'Booking History', href: '/admin/businesses/history' },
-      ]
-    },
-    {
-      title: 'Service Provider Controls',
-      icon: FiUserCheck,
-      href: '/admin/providers',
-      submenu: [
-        { title: 'Profile Verifications', href: '/admin/providers/verifications' },
-        { title: 'Document Verification', href: '/admin/providers/documents' },
-        { title: 'Onboarding', href: '/admin/providers/onboarding' },
-        { title: 'Performance', href: '/admin/providers/performance' },
-      ]
-    },
+    // {
+    //   title: 'Business Controls',
+    //   icon: FiBriefcase,
+    //   href: '/admin/businesses',
+    //   submenu: [
+    //     { title: 'Verifications', href: '/admin/businesses/verifications' },
+    //     { title: 'Subscriptions', href: '/admin/businesses/subscriptions' },
+    //     { title: 'Booking History', href: '/admin/businesses/history' },
+    //   ]
+    // },
+    // {
+    //   title: 'Service Provider Controls',
+    //   icon: FiUserCheck,
+    //   href: '/admin/providers',
+    //   submenu: [
+    //     { title: 'Profile Verifications', href: '/admin/providers/verifications' },
+    //     { title: 'Document Verification', href: '/admin/providers/documents' },
+    //     { title: 'Onboarding', href: '/admin/providers/onboarding' },
+    //     { title: 'Performance', href: '/admin/providers/performance' },
+    //   ]
+    // },
     {
       title: 'Service Categories',
       icon: FiBriefcase,

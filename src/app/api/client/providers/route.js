@@ -56,10 +56,14 @@ export async function GET(request) {
         categoryId: service.categoryId ? service.categoryId.toString() : null
       }));
 
-      // Get profile photo URL if exists
+      // Get profile photo URL if exists (support "images/xxx", "src/images/xxx", or "xxx")
       let photoUrl = null;
-      if (providerObj.photoPath) {
-        photoUrl = `/api/images/${providerObj.photoPath.replace(/^src\/images\//, '')}`;
+      if (providerObj.photoPath && typeof providerObj.photoPath === 'string') {
+        const path = providerObj.photoPath
+          .replace(/^src[/\\]images[/\\]/i, '')
+          .replace(/^images[/\\]/i, '')
+          .trim();
+        if (path) photoUrl = `/api/images/${path}`;
       }
 
       return {

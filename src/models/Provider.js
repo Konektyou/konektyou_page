@@ -159,6 +159,35 @@ const ProviderSchema = new mongoose.Schema(
     },
     lastLogin: {
       type: Date
+    },
+    // Provider subscription (unlock job feed)
+    subscription: {
+      planType: {
+        type: String,
+        enum: ['free', 'premium'],
+        default: 'free'
+      },
+      status: {
+        type: String,
+        enum: ['active', 'inactive', 'expired', 'cancelled'],
+        default: 'inactive'
+      },
+      startDate: {
+        type: Date
+      },
+      endDate: {
+        type: Date
+      },
+      amount: {
+        type: Number,
+        default: 0
+      },
+      stripeSubscriptionId: {
+        type: String
+      },
+      stripeCustomerId: {
+        type: String
+      }
     }
   },
   { timestamps: true }

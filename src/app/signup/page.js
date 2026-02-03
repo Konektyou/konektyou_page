@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { FiUser, FiMail, FiPhone, FiMapPin, FiClock, FiArrowRight } from 'react-icons/fi';
 
 export default function SignupPage() {
@@ -245,13 +246,13 @@ export default function SignupPage() {
             </motion.button>
           </form>
 
-          {/* Provider Signup Link */}
+          {/* Worker Signup Link */}
           <div className="mt-6 text-center">
             <p className="text-gray-600 text-sm">
-              Are you a service provider?{' '}
-              <a href="/provider-signup" className="text-black font-semibold hover:underline">
+              Are you a worker?{' '}
+              <Link href="/register?role=provider" className="text-black font-semibold hover:underline">
                 Create your profile
-              </a>
+              </Link>
             </p>
           </div>
         </motion.div>

@@ -3,16 +3,41 @@
 import { FiCalendar, FiDollarSign, FiCheckCircle, FiClock, FiAlertCircle, FiMap, FiLoader } from 'react-icons/fi';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { getProviderToken } from '@/lib/providerAuth';
+import WorkerFirstLoginExperience, { hasSeenFirstLoginExperience } from '@/components/provider/WorkerFirstLoginExperience';
 
 export default function ProviderDashboard() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState(null);
   const [error, setError] = useState(null);
+  const [showFirstLogin, setShowFirstLogin] = useState(false);
+  const [showSubscriptionSuccess, setShowSubscriptionSuccess] = useState(false);
 
   useEffect(() => {
-    fetchDashboardData();
-  }, []);
+    if (!hasSeenFirstLoginExperience()) {
+      setShowFirstLogin(true);
+      setLoading(false);
+      return;
+    }
+    (async () => {
+      const sessionId = searchParams?.get('session_id');
+      const subscriptionSuccess = searchParams?.get('subscription') === 'success';
+      const token = getProviderToken();
+      if (subscriptionSuccess && sessionId && token) {
+        try {
+          await fetch(`/api/provider/subscription/sync?session_id=${encodeURIComponent(sessionId)}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+        } catch (e) {
+          console.error('Subscription sync failed:', e);
+        }
+      }
+      await fetchDashboardData();
+    })();
+  }, [router, searchParams]);
 
   const fetchDashboardData = async () => {
     try {
@@ -30,9 +55,17 @@ export default function ProviderDashboard() {
       });
 
       const data = await response.json();
-      
+
       if (data.success) {
+        if (data.data.subscriptionActive === false) {
+          router.replace('/provider/subscription');
+          return;
+        }
         setDashboardData(data.data);
+        if (searchParams?.get('subscription') === 'success') {
+          setShowSubscriptionSuccess(true);
+          router.replace('/provider');
+        }
       } else {
         setError(data.message || 'Failed to fetch dashboard data');
       }
@@ -60,6 +93,10 @@ export default function ProviderDashboard() {
     // Otherwise, format it
     return timeString;
   };
+
+  if (showFirstLogin) {
+    return <WorkerFirstLoginExperience />;
+  }
 
   if (loading) {
     return (
@@ -113,6 +150,18 @@ export default function ProviderDashboard() {
 
   return (
     <div className="space-y-6">
+      {showSubscriptionSuccess && (
+        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 flex items-center justify-between">
+          <p className="text-emerald-800 font-medium">Your subscription is active. You can now access the job feed and find work.</p>
+          <button
+            type="button"
+            onClick={() => setShowSubscriptionSuccess(false)}
+            className="text-emerald-600 hover:text-emerald-800 text-sm font-medium"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
       {/* Page Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>

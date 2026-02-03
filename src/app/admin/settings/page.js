@@ -113,135 +113,138 @@ export default function SettingsPage() {
         </div>
       )}
 
-      {/* Commission Settings */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <FiPercent className="w-5 h-5" />
-          Commission Settings
-        </h2>
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Commission Rate (%)
-            </label>
-            <div className="flex items-center gap-3">
-              <input
-                type="number"
-                min="0"
-                max="100"
-                step="0.1"
-                value={settings.commissionRate}
-                onChange={(e) => {
-                  const value = parseFloat(e.target.value) || 0;
-                  if (value >= 0 && value <= 100) {
-                    setSettings({...settings, commissionRate: value});
-                  }
-                }}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-lg font-semibold"
-              />
-              <span className="text-2xl font-bold text-gray-700">%</span>
-            </div>
-            <p className="text-xs text-gray-500 mt-1">
-              Set the percentage commission you will take from each booking
-            </p>
-          </div>
-
-          {/* Visual Preview */}
-          <div className="mt-6 p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
-            <h3 className="text-sm font-semibold text-gray-900 mb-3">Commission Preview</h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-white rounded-lg">
-                <span className="text-sm text-gray-600">Example Booking Amount:</span>
-                <span className="text-lg font-bold text-gray-900">$100.00</span>
+      {/* Commission & Tax Settings - side by side */}
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Commission Settings - left */}
+        <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <FiPercent className="w-5 h-5" />
+            Commission Settings
+          </h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Commission Rate (%)
+              </label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={settings.commissionRate}
+                  onChange={(e) => {
+                    const value = parseFloat(e.target.value) || 0;
+                    if (value >= 0 && value <= 100) {
+                      setSettings({...settings, commissionRate: value});
+                    }
+                  }}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-lg font-semibold"
+                />
+                <span className="text-2xl font-bold text-gray-700">%</span>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 bg-blue-100 rounded-lg">
-                  <p className="text-xs text-blue-700 font-medium mb-1">Admin Commission</p>
-                  <p className="text-xl font-bold text-blue-900">
-                    ${((100 * settings.commissionRate) / 100).toFixed(2)}
-                  </p>
-                  <p className="text-xs text-blue-600 mt-1">({settings.commissionRate}%)</p>
+              <p className="text-xs text-gray-500 mt-1">
+                Set the percentage commission you will take from each booking
+              </p>
+            </div>
+
+            {/* Visual Preview */}
+            <div className="mt-6 p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">Commission Preview</h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 bg-white rounded-lg">
+                  <span className="text-sm text-gray-600">Example Booking Amount:</span>
+                  <span className="text-lg font-bold text-gray-900">$100.00</span>
                 </div>
-                <div className="p-3 bg-green-100 rounded-lg">
-                  <p className="text-xs text-green-700 font-medium mb-1">Provider Earnings</p>
-                  <p className="text-xl font-bold text-green-900">
-                    ${(100 - (100 * settings.commissionRate) / 100).toFixed(2)}
-                  </p>
-                  <p className="text-xs text-green-600 mt-1">({100 - settings.commissionRate}%)</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-3 bg-blue-100 rounded-lg">
+                    <p className="text-xs text-blue-700 font-medium mb-1">Admin Commission</p>
+                    <p className="text-xl font-bold text-blue-900">
+                      ${((100 * settings.commissionRate) / 100).toFixed(2)}
+                    </p>
+                    <p className="text-xs text-blue-600 mt-1">({settings.commissionRate}%)</p>
+                  </div>
+                  <div className="p-3 bg-green-100 rounded-lg">
+                    <p className="text-xs text-green-700 font-medium mb-1">Provider Earnings</p>
+                    <p className="text-xl font-bold text-green-900">
+                      ${(100 - (100 * settings.commissionRate) / 100).toFixed(2)}
+                    </p>
+                    <p className="text-xs text-green-600 mt-1">({100 - settings.commissionRate}%)</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <p className="text-xs text-yellow-800">
-              <strong>Note:</strong> Changing the commission rate will affect future bookings. Existing bookings will use the commission rate that was active at the time of booking.
-            </p>
+            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-xs text-yellow-800">
+                <strong>Note:</strong> Changing the commission rate will affect future bookings. Existing bookings will use the commission rate that was active at the time of booking.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Tax Settings */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <FiDollarSign className="w-5 h-5" />
-          Tax Settings
-        </h2>
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Tax Rate (%)
-            </label>
-            <div className="flex items-center gap-3">
-              <input
-                type="number"
-                min="0"
-                max="100"
-                step="0.1"
-                value={settings.taxRate}
-                onChange={(e) => {
-                  const value = parseFloat(e.target.value) || 0;
-                  if (value >= 0 && value <= 100) {
-                    setSettings({...settings, taxRate: value});
-                  }
-                }}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-lg font-semibold"
-              />
-              <span className="text-2xl font-bold text-gray-700">%</span>
+        {/* Tax Settings - right */}
+        <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <FiDollarSign className="w-5 h-5" />
+            Tax Settings
+          </h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Tax Rate (%)
+              </label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={settings.taxRate}
+                  onChange={(e) => {
+                    const value = parseFloat(e.target.value) || 0;
+                    if (value >= 0 && value <= 100) {
+                      setSettings({...settings, taxRate: value});
+                    }
+                  }}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-lg font-semibold"
+                />
+                <span className="text-2xl font-bold text-gray-700">%</span>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Set the tax rate (e.g., 13% for Canada HST/GST). Tax is added to the provider's price.
+              </p>
             </div>
-            <p className="text-xs text-gray-500 mt-1">
-              Set the tax rate (e.g., 13% for Canada HST/GST). Tax is added to the provider's price.
-            </p>
-          </div>
 
-          {/* Visual Preview */}
-          <div className="mt-6 p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg border border-purple-200">
-            <h3 className="text-sm font-semibold text-gray-900 mb-3">Tax Preview</h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-white rounded-lg">
-                <span className="text-sm text-gray-600">Provider Price:</span>
-                <span className="text-lg font-bold text-gray-900">$100.00</span>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-purple-100 rounded-lg">
-                <span className="text-sm text-purple-700 font-medium">Tax ({settings.taxRate}%):</span>
-                <span className="text-lg font-bold text-purple-900">
-                  ${((100 * settings.taxRate) / 100).toFixed(2)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-white rounded-lg border-2 border-purple-300">
-                <span className="text-sm font-semibold text-gray-900">Total Client Pays:</span>
-                <span className="text-xl font-bold text-gray-900">
-                  ${(100 + (100 * settings.taxRate) / 100).toFixed(2)}
-                </span>
+            {/* Visual Preview */}
+            <div className="mt-6 p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg border border-purple-200">
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">Tax Preview</h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 bg-white rounded-lg">
+                  <span className="text-sm text-gray-600">Provider Price:</span>
+                  <span className="text-lg font-bold text-gray-900">$100.00</span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-purple-100 rounded-lg">
+                  <span className="text-sm text-purple-700 font-medium">Tax ({settings.taxRate}%):</span>
+                  <span className="text-lg font-bold text-purple-900">
+                    ${((100 * settings.taxRate) / 100).toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-white rounded-lg border-2 border-purple-300">
+                  <span className="text-sm font-semibold text-gray-900">Total Client Pays:</span>
+                  <span className="text-xl font-bold text-gray-900">
+                    ${(100 + (100 * settings.taxRate) / 100).toFixed(2)}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-xs text-blue-800">
-              <strong>Note:</strong> Tax is added to the provider's price. Client pays: Provider Price + Tax. 
-              Commission is calculated separately from the provider's base price (before tax).
-            </p>
+            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-xs text-blue-800">
+                <strong>Note:</strong> Tax is added to the provider's price. Client pays: Provider Price + Tax. 
+                Commission is calculated separately from the provider's base price (before tax).
+              </p>
+            </div>
           </div>
         </div>
       </div>

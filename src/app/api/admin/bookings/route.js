@@ -17,13 +17,17 @@ export async function GET(request) {
     }
 
     const token = authHeader.substring(7);
-    
-    // For admin auth, we accept the token from localStorage
-    // The token is validated by checking if adminAuth exists in the request
-    // In production, you should implement proper JWT verification for admin tokens
+    const { searchParams } = new URL(request.url);
+    const providerId = searchParams.get('providerId');
+    const clientId = searchParams.get('clientId');
 
-    // Fetch all bookings
-    const bookings = await Booking.find({})
+    // Build query filter
+    const filter = {};
+    if (providerId) filter.providerId = providerId;
+    if (clientId) filter.clientId = clientId;
+
+    // Fetch bookings (optionally filtered by provider or client)
+    const bookings = await Booking.find(filter)
       .populate('clientId', 'name email phone')
       .populate('providerId', 'name email phone photoPath city province')
       .populate('serviceId', 'name description basePrice unit')

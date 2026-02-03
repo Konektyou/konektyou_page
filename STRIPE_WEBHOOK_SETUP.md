@@ -1,5 +1,18 @@
 # Stripe Webhook Setup for Subscription Management
 
+## Quick setup (Get Premium → Stripe payment page)
+
+1. **Add to your `.env` file** (create one from this if you don’t have it):
+   ```env
+   STRIPE_SECRET_KEY=sk_test_...   # From https://dashboard.stripe.com/apikeys
+   STRIPE_WEBHOOK_SECRET=whsec_... # From Stripe Dashboard → Webhooks (after adding endpoint)
+   NEXT_PUBLIC_APP_URL=http://localhost:3000   # Or your production URL
+   ```
+2. **Restart your dev server** after adding the variables.
+3. For local webhook testing: run `stripe listen --forward-to localhost:3000/api/webhooks/stripe` and use the printed webhook secret in `.env`.
+
+Without `STRIPE_SECRET_KEY`, the “Get Premium” button will show an error and will not redirect to Stripe.
+
 ## Overview
 This application uses Stripe webhooks to handle recurring subscription payments and subscription lifecycle events.
 

@@ -22,6 +22,12 @@ const AdminSettingsSchema = new mongoose.Schema(
       min: 0,
       required: true
     },
+    providerSubscriptionPrice: {
+      type: Number,
+      default: 29, // Default $29/month for workers
+      min: 0,
+      required: true
+    },
     updatedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Admin',
@@ -35,7 +41,7 @@ const AdminSettingsSchema = new mongoose.Schema(
 AdminSettingsSchema.statics.getSettings = async function() {
   let settings = await this.findOne();
   if (!settings) {
-    settings = await this.create({ commissionRate: 10, taxRate: 13, clientSubscriptionPrice: 50 });
+    settings = await this.create({ commissionRate: 10, taxRate: 13, clientSubscriptionPrice: 50, providerSubscriptionPrice: 29 });
   }
   return settings;
 };

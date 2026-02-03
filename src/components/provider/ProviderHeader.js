@@ -6,6 +6,12 @@ import { FiMenu, FiUser, FiSettings, FiLogOut, FiChevronDown } from 'react-icons
 import ConfirmationModal from '@/components/admin/ConfirmationModal';
 import { getProviderData, clearProviderAuth } from '@/lib/providerAuth';
 
+function getPhotoUrl(photoPath) {
+  if (!photoPath || typeof photoPath !== 'string') return null;
+  const clean = photoPath.replace(/^images[/\\]?/i, '').replace(/^src[/\\]images[/\\]?/i, '').trim();
+  return clean ? `/api/images/${encodeURIComponent(clean)}` : null;
+}
+
 export default function ProviderHeader({ onMenuClick }) {
   const router = useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -56,8 +62,12 @@ export default function ProviderHeader({ onMenuClick }) {
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className="flex items-center gap-1.5 p-1 rounded-lg hover:bg-gray-100 transition-colors"
             >
-              <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
-                <FiUser className="w-4 h-4 text-white" />
+              <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center overflow-hidden shrink-0">
+                {getPhotoUrl(providerData?.photoPath) ? (
+                  <img src={getPhotoUrl(providerData.photoPath)} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <FiUser className="w-4 h-4 text-white" />
+                )}
               </div>
               <FiChevronDown className={`w-3 h-3 text-gray-600 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
@@ -68,21 +78,21 @@ export default function ProviderHeader({ onMenuClick }) {
                 <button
                   onClick={() => {
                     setIsDropdownOpen(false);
-                    // Navigate to profile
+                    router.push('/provider/profile');
                   }}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 transition-colors"
+                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 transition-colors text-left"
                 >
-                  <FiUser className="w-3 h-3" />
+                  <FiUser className="w-3 h-3 shrink-0" />
                   <span>Profile</span>
                 </button>
                 <button
                   onClick={() => {
                     setIsDropdownOpen(false);
-                    // Navigate to settings
+                    router.push('/provider/profile');
                   }}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 transition-colors"
+                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 transition-colors text-left"
                 >
-                  <FiSettings className="w-3 h-3" />
+                  <FiSettings className="w-3 h-3 shrink-0" />
                   <span>Settings</span>
                 </button>
                 <div className="border-t border-gray-200 my-1"></div>

@@ -97,13 +97,13 @@ export default function Hero() {
               onClick={() => handleRoleSelect('client')}
               className="cursor-pointer bg-white/50 backdrop-blur-sm text-black px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white transition-all shadow-lg border border-gray-200 focus:outline-none focus:ring-0"
             >
-              For Clients
+              For Business
             </button>
             <button
               onClick={() => handleRoleSelect('provider')}
               className="cursor-pointer bg-white/50 backdrop-blur-sm text-black px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white transition-all shadow-lg border border-gray-200 focus:outline-none focus:ring-0"
             >
-              For Service Providers
+              For Workers
             </button>
           </div>
 

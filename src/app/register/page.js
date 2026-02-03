@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { FiMail, FiLock, FiUser, FiAlertCircle, FiLoader, FiCheck, FiEye, FiEyeOff, FiArrowLeft } from 'react-icons/fi';
 import { setProviderAuth } from '@/lib/providerAuth';
 import { setClientAuth } from '@/lib/clientAuth';
-import { setBusinessAuth } from '@/lib/businessAuth';
 
 function RegisterContent() {
   const router = useRouter();
@@ -15,7 +14,7 @@ function RegisterContent() {
   
   // Set default tab based on URL parameter, fallback to 'client'
   const getInitialTab = () => {
-    if (roleFromUrl === 'client' || roleFromUrl === 'business' || roleFromUrl === 'provider') {
+    if (roleFromUrl === 'client' || roleFromUrl === 'provider') {
       return roleFromUrl;
     }
     return 'client';
@@ -40,9 +39,8 @@ function RegisterContent() {
   const [verifyingOtp, setVerifyingOtp] = useState(false);
 
   const tabs = [
-    { id: 'client', label: 'Client' },
-    { id: 'business', label: 'Business' },
-    { id: 'provider', label: 'Provider' }
+    { id: 'client', label: 'Business' },
+    { id: 'provider', label: 'Worker' }
   ];
 
   const handleChange = (e) => {
@@ -55,7 +53,7 @@ function RegisterContent() {
 
   useEffect(() => {
     // Set active tab from URL parameter if present
-    if (roleFromUrl === 'client' || roleFromUrl === 'business' || roleFromUrl === 'provider') {
+    if (roleFromUrl === 'client' || roleFromUrl === 'provider') {
       setActiveTab(roleFromUrl);
     }
   }, [roleFromUrl]);
@@ -141,9 +139,6 @@ function RegisterContent() {
         } else if (activeTab === 'client') {
           setClientAuth(data.token, data.client);
           router.push('/client');
-        } else if (activeTab === 'business') {
-          setBusinessAuth(data.token, data.business);
-          router.push('/business');
         }
       } else {
         setError(data.message || 'Invalid verification code');
@@ -245,25 +240,6 @@ function RegisterContent() {
             router.push('/client');
             return;
           }
-        } else if (activeTab === 'business') {
-          // Login to get full business data
-          const loginResponse = await fetch('/api/business/login', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email: formData.email,
-              password: formData.password
-            }),
-          });
-
-          const loginData = await loginResponse.json();
-          if (loginData.success) {
-            setBusinessAuth(loginData.token, loginData.business);
-            router.push('/business');
-            return;
-          }
         }
 
         // Fallback: show success message and redirect to login
@@ -285,11 +261,9 @@ function RegisterContent() {
   const getRoleLabel = () => {
     switch (activeTab) {
       case 'client':
-        return 'Client';
-      case 'business':
         return 'Business';
       case 'provider':
-        return 'Provider';
+        return 'Worker';
       default:
         return 'User';
     }

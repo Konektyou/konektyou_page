@@ -117,13 +117,9 @@ export async function GET(request) {
         updatedAt: provider.updatedAt
       }));
     } else {
-      // Fetch all users
-      const [clients, businesses, providers] = await Promise.all([
+      // Fetch all users (client + provider only; business excluded)
+      const [clients, providers] = await Promise.all([
         Client.find(searchQuery)
-          .select('-password -resetPasswordToken -resetPasswordExpires')
-          .sort({ createdAt: -1 })
-          .lean(),
-        Business.find(searchQuery)
           .select('-password -resetPasswordToken -resetPasswordExpires')
           .sort({ createdAt: -1 })
           .lean(),
@@ -149,23 +145,6 @@ export async function GET(request) {
           lastLogin: client.lastLogin,
           createdAt: client.createdAt,
           updatedAt: client.updatedAt
-        })),
-        ...businesses.map((business) => ({
-          id: business._id.toString(),
-          role: 'business',
-          name: business.name,
-          businessName: business.businessName || 'N/A',
-          email: business.email,
-          phone: business.phone || 'N/A',
-          city: business.city || 'N/A',
-          province: business.province || 'N/A',
-          isVerified: business.isVerified,
-          isActive: business.isActive,
-          isBanned: business.isBanned,
-          banReason: business.banReason,
-          lastLogin: business.lastLogin,
-          createdAt: business.createdAt,
-          updatedAt: business.updatedAt
         })),
         ...providers.map((provider) => ({
           id: provider._id.toString(),
@@ -195,10 +174,9 @@ export async function GET(request) {
       users = allUsers.slice(skip, skip + limit);
     }
 
-    // Get counts for each role
-    const [clientCount, businessCount, providerCount] = await Promise.all([
+    // Get counts for client and provider only (business excluded from admin users list)
+    const [clientCount, providerCount] = await Promise.all([
       Client.countDocuments(),
-      Business.countDocuments(),
       Provider.countDocuments()
     ]);
 
@@ -210,9 +188,8 @@ export async function GET(request) {
       limit,
       totalPages: Math.ceil(total / limit),
       counts: {
-        all: clientCount + businessCount + providerCount,
+        all: clientCount + providerCount,
         client: clientCount,
-        business: businessCount,
         provider: providerCount
       }
     });

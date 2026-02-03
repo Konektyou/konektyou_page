@@ -17,7 +17,10 @@ import {
   FiImage,
   FiLoader,
   FiAlertCircle,
-  FiX
+  FiX,
+  FiDollarSign,
+  FiCalendar,
+  FiPackage
 } from 'react-icons/fi';
 import { getAdminToken } from '@/lib/adminAuth';
 import ConfirmationModal from '@/components/admin/ConfirmationModal';
@@ -35,12 +38,56 @@ export default function UserDetailPage() {
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectionReason, setRejectionReason] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
+  const [services, setServices] = useState([]);
+  const [bookings, setBookings] = useState([]);
+  const [servicesLoading, setServicesLoading] = useState(false);
+  const [bookingsLoading, setBookingsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('details'); // 'details' | 'services' | 'booking'
 
   useEffect(() => {
     if (role && id) {
       fetchUserDetails();
     }
   }, [role, id]);
+
+  // Fetch provider's offered services (provider only)
+  useEffect(() => {
+    if (!user || user.role !== 'provider' || !id) return;
+    const token = getAdminToken();
+    if (!token) return;
+    let cancelled = false;
+    setServicesLoading(true);
+    fetch(`/api/admin/providers/${id}/services`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled && data.success) setServices(data.services || []);
+      })
+      .catch(() => { if (!cancelled) setServices([]); })
+      .finally(() => { if (!cancelled) setServicesLoading(false); });
+    return () => { cancelled = true; };
+  }, [user, id]);
+
+  // Fetch bookings (provider: jobs they did; client: jobs they requested)
+  useEffect(() => {
+    if (!user || !id) return;
+    const token = getAdminToken();
+    if (!token) return;
+    const param = user.role === 'provider' ? 'providerId' : 'clientId';
+    let cancelled = false;
+    setBookingsLoading(true);
+    fetch(`/api/admin/bookings?${param}=${id}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled && data.success) setBookings(data.bookings || []);
+      })
+      .catch(() => { if (!cancelled) setBookings([]); })
+      .finally(() => { if (!cancelled) setBookingsLoading(false); });
+    return () => { cancelled = true; };
+  }, [user, id]);
 
   const fetchUserDetails = async () => {
     setLoading(true);
@@ -319,6 +366,48 @@ export default function UserDetailPage() {
         </div>
       </div>
 
+      {/* Tabs */}
+      <div className="border-b border-gray-200">
+        <nav className="flex gap-1" aria-label="Tabs">
+          <button
+            onClick={() => setActiveTab('details')}
+            className={`px-4 py-3 text-sm font-medium rounded-t-lg transition-colors ${
+              activeTab === 'details'
+                ? 'bg-white border border-b-0 border-gray-200 text-black -mb-px'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+            }`}
+          >
+            Worker Details
+          </button>
+          {user.role === 'provider' && (
+            <button
+              onClick={() => setActiveTab('services')}
+              className={`px-4 py-3 text-sm font-medium rounded-t-lg transition-colors ${
+                activeTab === 'services'
+                  ? 'bg-white border border-b-0 border-gray-200 text-black -mb-px'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Services
+            </button>
+          )}
+          {(user.role === 'provider' || user.role === 'client') && (
+            <button
+              onClick={() => setActiveTab('booking')}
+              className={`px-4 py-3 text-sm font-medium rounded-t-lg transition-colors ${
+                activeTab === 'booking'
+                  ? 'bg-white border border-b-0 border-gray-200 text-black -mb-px'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Booking
+            </button>
+          )}
+        </nav>
+      </div>
+
+      {/* Tab: Worker Details */}
+      {activeTab === 'details' && (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Side */}
         <div className="lg:col-span-2 space-y-6">
@@ -580,6 +669,136 @@ export default function UserDetailPage() {
 
         </div>
       </div>
+      )}
+
+      {/* Tab: Services */}
+      {activeTab === 'services' && user.role === 'provider' && (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-black/90 px-6 py-4">
+            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              <FiPackage className="w-5 h-5" />
+              Services Offered ({services.length})
+            </h2>
+          </div>
+          <div className="p-6">
+            {servicesLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <FiLoader className="w-8 h-8 animate-spin text-gray-400" />
+              </div>
+            ) : services.length === 0 ? (
+              <p className="text-gray-500">No services added yet.</p>
+            ) : (
+              <div className="space-y-4">
+                {services.map((svc) => (
+                  <div
+                    key={svc.id}
+                    className="border border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base font-semibold text-gray-900">{svc.name}</h3>
+                        {svc.description && (
+                          <p className="text-sm text-gray-600 mt-1 line-clamp-2">{svc.description}</p>
+                        )}
+                        <div className="flex flex-wrap items-center gap-2 mt-2">
+                          {svc.category && (
+                            <span className="px-2 py-0.5 text-xs font-medium rounded bg-gray-100 text-gray-700">
+                              {svc.category}
+                            </span>
+                          )}
+                          <span className="text-xs text-gray-500">{svc.unit || 'per hour'}</span>
+                          {!svc.active && (
+                            <span className="px-2 py-0.5 text-xs font-medium rounded bg-red-100 text-red-700">Inactive</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 text-lg font-bold text-gray-900 shrink-0">
+                        <FiDollarSign className="w-5 h-5 text-gray-500" />
+                        {Number(svc.basePrice).toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Booking */}
+      {activeTab === 'booking' && (user.role === 'provider' || user.role === 'client') && (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-black/90 px-6 py-4">
+            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              <FiCalendar className="w-5 h-5" />
+              Bookings ({bookings.length})
+            </h2>
+          </div>
+          <div className="p-6">
+            {bookingsLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <FiLoader className="w-8 h-8 animate-spin text-gray-400" />
+              </div>
+            ) : bookings.length === 0 ? (
+              <p className="text-gray-500">
+                {user.role === 'provider' ? 'No bookings yet.' : 'No booking history.'}
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {bookings.map((b) => (
+                  <div
+                    key={b.id}
+                    className="border border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors"
+                  >
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-base font-semibold text-gray-900">{b.serviceName || 'Service'}</p>
+                        <p className="text-sm text-gray-600 mt-0.5">
+                          {user.role === 'provider' ? (
+                            <>Client: <span className="font-medium text-gray-900">{b.clientName}</span></>
+                          ) : (
+                            <>Worker: <span className="font-medium text-gray-900">{b.providerName}</span></>
+                          )}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                          <FiClock className="w-3 h-3" />
+                          {formatDate(b.startTime)} · {b.duration}h
+                        </p>
+                        {b.workLocation?.address && (
+                          <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
+                            <FiMapPin className="w-3 h-3" />
+                            {b.workLocation.address}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex flex-col items-end gap-1 shrink-0">
+                        <span className="text-lg font-bold text-gray-900">
+                          ${Number(b.amount).toFixed(2)}
+                        </span>
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                          b.status === 'completed' ? 'bg-green-100 text-green-800' :
+                          b.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                          b.status === 'confirmed' || b.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
+                          'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {b.status}
+                        </span>
+                        <span className={`px-2 py-0.5 text-xs font-medium rounded ${
+                          b.paymentStatus === 'paid' ? 'bg-green-50 text-green-700' :
+                          b.paymentStatus === 'failed' || b.paymentStatus === 'refunded' ? 'bg-red-50 text-red-700' :
+                          'bg-gray-100 text-gray-700'
+                        }`}>
+                          {b.paymentStatus}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Approve Confirmation Modal */}
       <ConfirmationModal

@@ -32,8 +32,8 @@ function LoginContent() {
   const [showPassword, setShowPassword] = useState(false);
 
   const tabs = [
-    { id: 'client', label: 'Client' },
-    { id: 'provider', label: 'Provider' }
+    { id: 'client', label: 'Business' },
+    { id: 'provider', label: 'Worker' }
   ];
 
   useEffect(() => {
@@ -117,9 +117,9 @@ function LoginContent() {
   const getRoleLabel = () => {
     switch (activeTab) {
       case 'client':
-        return 'Client';
+        return 'Business';
       case 'provider':
-        return 'Provider';
+        return 'Worker';
       default:
         return 'User';
     }

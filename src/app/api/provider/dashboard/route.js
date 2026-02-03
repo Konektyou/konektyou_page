@@ -44,6 +44,13 @@ export async function GET(request) {
     // Get provider name from profile
     const providerName = provider.name || 'Provider';
 
+    const now = new Date();
+    const subscriptionActive =
+      provider.subscription?.status === 'active' &&
+      provider.subscription?.planType === 'premium' &&
+      (!provider.subscription?.endDate || new Date(provider.subscription.endDate) > now) &&
+      (!provider.subscription?.startDate || new Date(provider.subscription.startDate) <= now);
+
     return NextResponse.json({
       success: true,
       data: {
@@ -59,7 +66,9 @@ export async function GET(request) {
           serviceType: provider.serviceType || '',
           city: provider.city || '',
           province: provider.province || ''
-        }
+        },
+        subscription: provider.subscription || null,
+        subscriptionActive
       }
     });
   } catch (error) {

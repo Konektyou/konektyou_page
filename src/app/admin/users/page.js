@@ -9,7 +9,7 @@ export default function UsersPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [selectedRole, setSelectedRole] = useState('all'); // 'all', 'client', 'business', 'provider'
+  const [selectedRole, setSelectedRole] = useState('all'); // 'all', 'client', 'provider'
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -17,7 +17,6 @@ export default function UsersPage() {
   const [counts, setCounts] = useState({
     all: 0,
     client: 0,
-    business: 0,
     provider: 0
   });
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -56,7 +55,7 @@ export default function UsersPage() {
         setUsers(data.users);
         setTotal(data.total);
         setTotalPages(data.totalPages);
-        setCounts(data.counts);
+        setCounts(data.counts || { all: 0, client: 0, provider: 0 });
       } else {
         setError(data.message || 'Failed to fetch users');
       }
@@ -141,12 +140,16 @@ export default function UsersPage() {
     });
   };
 
+  const getRoleDisplayName = (role) => {
+    if (role === 'client') return 'Business';
+    if (role === 'provider') return 'Worker';
+    return role ? role.charAt(0).toUpperCase() + role.slice(1) : '';
+  };
+
   const getRoleBadgeColor = (role) => {
     switch (role) {
       case 'client':
         return 'bg-green-100 text-green-800';
-      case 'business':
-        return 'bg-purple-100 text-purple-800';
       case 'provider':
         return 'bg-blue-100 text-blue-800';
       default:
@@ -183,13 +186,6 @@ export default function UsersPage() {
         </span>
       );
     }
-    if (user.role === 'business' && !user.isVerified) {
-      return (
-        <span className="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">
-          Unverified
-        </span>
-      );
-    }
     return (
       <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
         Active
@@ -198,10 +194,9 @@ export default function UsersPage() {
   };
 
   const roleFilters = [
-    { id: 'all', label: 'All Users', icon: FiUsers, count: counts.all },
-    { id: 'client', label: 'Clients', icon: FiUserCheck, count: counts.client },
-    { id: 'business', label: 'Businesses', icon: FiBriefcase, count: counts.business },
-    { id: 'provider', label: 'Providers', icon: FiUserCheck, count: counts.provider }
+    { id: 'all', label: 'All Users', icon: FiUsers, count: counts.all ?? 0 },
+    { id: 'client', label: 'Business', icon: FiBriefcase, count: counts.client ?? 0 },
+    { id: 'provider', label: 'Workers', icon: FiUserCheck, count: counts.provider ?? 0 }
   ];
 
   return (
@@ -213,7 +208,7 @@ export default function UsersPage() {
       </div>
 
       {/* Role Filters */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {roleFilters.map((filter) => {
           const Icon = filter.icon;
           const isActive = selectedRole === filter.id;
@@ -311,7 +306,7 @@ export default function UsersPage() {
                             <div className="text-sm font-medium text-gray-900">{user.name}</div>
                             <div className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                               <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getRoleBadgeColor(user.role)}`}>
-                                {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                                {getRoleDisplayName(user.role)}
                               </span>
                             </div>
                           </div>
@@ -427,7 +422,7 @@ export default function UsersPage() {
                   <p className="text-sm font-medium text-gray-900">{userToDelete.name}</p>
                   <p className="text-xs text-gray-500">{userToDelete.email}</p>
                   <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium mt-1 ${getRoleBadgeColor(userToDelete.role)}`}>
-                    {userToDelete.role.charAt(0).toUpperCase() + userToDelete.role.slice(1)}
+                    {getRoleDisplayName(userToDelete.role)}
                   </span>
                 </div>
               </div>

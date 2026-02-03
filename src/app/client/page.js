@@ -29,6 +29,16 @@ const ClientReviewsPage = dynamic(() => import('@/app/client/reviews/page'), { s
 const ClientProfilePage = dynamic(() => import('@/app/client/profile/page'), { ssr: false });
 const ClientSettingsPage = dynamic(() => import('@/app/client/settings/page'), { ssr: false });
 
+function getProviderPhotoUrl(provider) {
+  if (!provider) return null;
+  if (provider.photo && typeof provider.photo === 'string') return provider.photo;
+  if (provider.photoPath && typeof provider.photoPath === 'string') {
+    const path = provider.photoPath.replace(/^src[/\\]images[/\\]/i, '').replace(/^images[/\\]/i, '').trim();
+    return path ? `/api/images/${path}` : null;
+  }
+  return null;
+}
+
 export default function ClientDashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -48,6 +58,7 @@ export default function ClientDashboard() {
   const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const [pendingBookingProviderId, setPendingBookingProviderId] = useState(null);
+  const [providerPhotoError, setProviderPhotoError] = useState({});
 
   useEffect(() => {
     requestUserLocation();
@@ -363,14 +374,15 @@ export default function ClientDashboard() {
           >
             <div className="p-6 border-b border-gray-200 flex items-start justify-between">
               <div className="flex items-start gap-4">
-                {selectedProvider.photo ? (
+                {(getProviderPhotoUrl(selectedProvider) && !providerPhotoError[selectedProvider.id]) ? (
                   <img
-                    src={selectedProvider.photo}
+                    src={getProviderPhotoUrl(selectedProvider)}
                     alt={selectedProvider.name}
-                    className="w-20 h-20 rounded-lg object-cover"
+                    className="w-20 h-20 rounded-lg object-cover shrink-0"
+                    onError={() => setProviderPhotoError((prev) => ({ ...prev, [selectedProvider.id]: true }))}
                   />
                 ) : (
-                  <div className="w-20 h-20 rounded-lg bg-gray-200 flex items-center justify-center">
+                  <div className="w-20 h-20 rounded-lg bg-gray-200 flex items-center justify-center shrink-0">
                     <span className="text-2xl font-bold text-gray-600">
                       {selectedProvider.name?.charAt(0).toUpperCase() || 'P'}
                     </span>
@@ -399,13 +411,6 @@ export default function ClientDashboard() {
             </div>
 
             <div className="p-6 space-y-4">
-              {(selectedProvider.phone || selectedProvider.email) && (
-                <div className="text-sm text-gray-700">
-                  {selectedProvider.phone && <p>Phone: {selectedProvider.phone}</p>}
-                  {selectedProvider.email && <p>Email: {selectedProvider.email}</p>}
-                </div>
-              )}
-
               {selectedProvider.services?.length > 0 && (
                 <div>
                   <h3 className="text-sm font-semibold text-gray-700 mb-2">Services</h3>

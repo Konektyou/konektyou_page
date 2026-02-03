@@ -1,13 +1,30 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import Client from '@/models/Client';
+import Provider from '@/models/Provider';
+import mongoose from 'mongoose';
 const Stripe = require('stripe');
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
+const stripeSecretKey = (process.env.STRIPE_SECRET_KEY || '').trim();
+const webhookSecret = (process.env.STRIPE_WEBHOOK_SECRET || '').trim();
 
 export async function POST(request) {
   try {
+    if (!stripeSecretKey) {
+      console.error('Stripe webhook: STRIPE_SECRET_KEY is not set');
+      return NextResponse.json(
+        { success: false, message: 'Stripe not configured' },
+        { status: 500 }
+      );
+    }
+    if (!webhookSecret) {
+      console.error('Stripe webhook: STRIPE_WEBHOOK_SECRET is not set. For local testing run: stripe listen --forward-to localhost:3000/api/webhooks/stripe');
+      return NextResponse.json(
+        { success: false, message: 'Webhook secret not configured' },
+        { status: 500 }
+      );
+    }
+
     await connectToDatabase();
 
     const body = await request.text();
@@ -20,11 +37,12 @@ export async function POST(request) {
       );
     }
 
+    const stripe = new Stripe(stripeSecretKey);
     let event;
     try {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
     } catch (err) {
-      console.error('Webhook signature verification failed:', err.message);
+      console.error('Webhook signature verification failed:', err.message, '– Set STRIPE_WEBHOOK_SECRET in .env. For local dev use: stripe listen --forward-to localhost:3000/api/webhooks/stripe');
       return NextResponse.json(
         { success: false, message: 'Webhook signature verification failed' },
         { status: 400 }
@@ -34,12 +52,12 @@ export async function POST(request) {
     // Handle different event types
     switch (event.type) {
       case 'checkout.session.completed':
-        await handleCheckoutSessionCompleted(event.data.object);
+        await handleCheckoutSessionCompleted(event.data.object, stripe);
         break;
 
       case 'customer.subscription.created':
       case 'customer.subscription.updated':
-        await handleSubscriptionUpdated(event.data.object);
+        await handleSubscriptionUpdated(event.data.object, stripe);
         break;
 
       case 'customer.subscription.deleted':
@@ -47,7 +65,7 @@ export async function POST(request) {
         break;
 
       case 'invoice.payment_succeeded':
-        await handleInvoicePaymentSucceeded(event.data.object);
+        await handleInvoicePaymentSucceeded(event.data.object, stripe);
         break;
 
       case 'invoice.payment_failed':
@@ -68,68 +86,85 @@ export async function POST(request) {
   }
 }
 
-// Handle checkout session completed (initial subscription)
-async function handleCheckoutSessionCompleted(session) {
+// Handle checkout session completed (initial subscription payment succeeded)
+async function handleCheckoutSessionCompleted(session, stripe) {
   try {
-    const clientId = session.metadata?.clientId;
-    if (!clientId) {
-      console.error('No clientId in session metadata');
-      return;
-    }
-
-    const client = await Client.findById(clientId);
-    if (!client) {
-      console.error('Client not found:', clientId);
-      return;
-    }
-
-    // Get subscription from Stripe
-    const subscriptionId = session.subscription;
+    const rawSub = session.subscription;
+    const subscriptionId = typeof rawSub === 'string' ? rawSub : (rawSub?.id || rawSub);
     if (!subscriptionId) {
-      console.error('No subscription ID in session');
+      console.error('Stripe webhook: No subscription ID in checkout session', session.id);
       return;
     }
 
     const subscription = await stripe.subscriptions.retrieve(subscriptionId);
     const startDate = new Date(subscription.current_period_start * 1000);
-    const endDate = new Date(subscription.current_period_end * 1000); // This is 30 days from start
+    const endDate = new Date(subscription.current_period_end * 1000);
+    const amount = subscription.items?.data?.[0]?.price?.unit_amount != null
+      ? subscription.items.data[0].price.unit_amount / 100
+      : 50;
+    const stripeCustomerId = typeof subscription.customer === 'string'
+      ? subscription.customer
+      : subscription.customer?.id;
 
-    // Update client subscription with proper dates
-    if (!client.subscription) {
-      client.subscription = {};
+    const subscriptionUpdate = {
+      planType: 'premium',
+      status: subscription.status === 'active' ? 'active' : 'inactive',
+      startDate,
+      endDate,
+      amount,
+      stripeSubscriptionId: subscriptionId,
+      stripeCustomerId: stripeCustomerId || ''
+    };
+
+    const clientId = session.metadata?.clientId;
+    const providerId = session.metadata?.providerId;
+
+    if (clientId) {
+      const conn = await connectToDatabase();
+      const db = conn.connection.db;
+      const clientsCollection = db.collection('clients');
+      const clientObjectId = mongoose.Types.ObjectId(clientId);
+      const updateResult = await clientsCollection.updateOne(
+        { _id: clientObjectId },
+        { $set: { subscription: subscriptionUpdate, updatedAt: new Date() } }
+      );
+      if (updateResult.matchedCount === 0) {
+        console.error('Stripe webhook: Client not found for id', clientId);
+        return;
+      }
+      console.log('Subscription activated for client:', clientId, 'Start:', startDate, 'End:', endDate);
+      return;
     }
 
-    client.subscription.planType = 'premium';
-    client.subscription.status = subscription.status === 'active' ? 'active' : 'inactive';
-    client.subscription.startDate = startDate;
-    client.subscription.endDate = endDate; // 30 days from start
-    client.subscription.amount = subscription.items.data[0]?.price?.unit_amount / 100 || 50;
-    client.subscription.stripeSubscriptionId = subscriptionId;
-    client.subscription.stripeCustomerId = subscription.customer;
+    if (providerId) {
+      const conn = await connectToDatabase();
+      const db = conn.connection.db;
+      const providersCollection = db.collection('providers');
+      const providerObjectId = mongoose.Types.ObjectId(providerId);
+      const updateResult = await providersCollection.updateOne(
+        { _id: providerObjectId },
+        { $set: { subscription: subscriptionUpdate, updatedAt: new Date() } }
+      );
+      if (updateResult.matchedCount === 0) {
+        console.error('Stripe webhook: Provider not found for id', providerId);
+        return;
+      }
+      console.log('Subscription activated for provider:', providerId, 'Start:', startDate, 'End:', endDate);
+      return;
+    }
 
-    await client.save();
-    console.log('Subscription activated for client:', clientId, 'Start:', startDate, 'End:', endDate);
+    console.error('Stripe webhook: No clientId or providerId in session metadata', session.id);
   } catch (error) {
     console.error('Error handling checkout session completed:', error);
+    throw error;
   }
 }
 
 // Handle subscription updated (renewals, status changes)
-async function handleSubscriptionUpdated(subscription) {
+async function handleSubscriptionUpdated(subscription, stripe) {
   try {
-    const client = await Client.findOne({
-      'subscription.stripeSubscriptionId': subscription.id
-    });
-
-    if (!client) {
-      console.error('Client not found for subscription:', subscription.id);
-      return;
-    }
-
     const startDate = new Date(subscription.current_period_start * 1000);
     const endDate = new Date(subscription.current_period_end * 1000);
-
-    // Update subscription status
     let status = 'inactive';
     if (subscription.status === 'active') {
       status = 'active';
@@ -138,14 +173,34 @@ async function handleSubscriptionUpdated(subscription) {
     } else if (subscription.status === 'past_due') {
       status = 'expired';
     }
+    const amount = subscription.items?.data?.[0]?.price?.unit_amount != null
+      ? subscription.items.data[0].price.unit_amount / 100
+      : null;
 
-    client.subscription.status = status;
-    client.subscription.startDate = startDate;
-    client.subscription.endDate = endDate;
-    client.subscription.amount = subscription.items.data[0]?.price?.unit_amount / 100 || client.subscription.amount || 50;
+    const client = await Client.findOne({ 'subscription.stripeSubscriptionId': subscription.id });
+    if (client) {
+      client.subscription.status = status;
+      client.subscription.startDate = startDate;
+      client.subscription.endDate = endDate;
+      if (amount != null) client.subscription.amount = amount;
+      await client.save();
+      console.log('Subscription updated for client:', client._id);
+      return;
+    }
 
-    await client.save();
-    console.log('Subscription updated for client:', client._id);
+    const provider = await Provider.findOne({ 'subscription.stripeSubscriptionId': subscription.id });
+    if (provider) {
+      if (!provider.subscription) provider.subscription = {};
+      provider.subscription.status = status;
+      provider.subscription.startDate = startDate;
+      provider.subscription.endDate = endDate;
+      if (amount != null) provider.subscription.amount = amount;
+      await provider.save();
+      console.log('Subscription updated for provider:', provider._id);
+      return;
+    }
+
+    console.error('Client/Provider not found for subscription:', subscription.id);
   } catch (error) {
     console.error('Error handling subscription updated:', error);
   }
@@ -154,57 +209,63 @@ async function handleSubscriptionUpdated(subscription) {
 // Handle subscription deleted
 async function handleSubscriptionDeleted(subscription) {
   try {
-    const client = await Client.findOne({
-      'subscription.stripeSubscriptionId': subscription.id
-    });
-
-    if (!client) {
-      console.error('Client not found for subscription:', subscription.id);
+    const client = await Client.findOne({ 'subscription.stripeSubscriptionId': subscription.id });
+    if (client) {
+      client.subscription.status = 'cancelled';
+      await client.save();
+      console.log('Subscription cancelled for client:', client._id);
       return;
     }
-
-    client.subscription.status = 'cancelled';
-    await client.save();
-    console.log('Subscription cancelled for client:', client._id);
+    const provider = await Provider.findOne({ 'subscription.stripeSubscriptionId': subscription.id });
+    if (provider) {
+      if (provider.subscription) provider.subscription.status = 'cancelled';
+      await provider.save();
+      console.log('Subscription cancelled for provider:', provider._id);
+      return;
+    }
+    console.error('Client/Provider not found for subscription:', subscription.id);
   } catch (error) {
     console.error('Error handling subscription deleted:', error);
   }
 }
 
 // Handle successful invoice payment (monthly renewal)
-async function handleInvoicePaymentSucceeded(invoice) {
+async function handleInvoicePaymentSucceeded(invoice, stripe) {
   try {
-    const subscriptionId = invoice.subscription;
-    if (!subscriptionId) {
-      return;
-    }
+    const subscriptionId = typeof invoice.subscription === 'string'
+      ? invoice.subscription
+      : invoice.subscription?.id;
+    if (!subscriptionId) return;
 
-    const client = await Client.findOne({
-      'subscription.stripeSubscriptionId': subscriptionId
-    });
-
-    if (!client) {
-      console.error('Client not found for subscription:', subscriptionId);
-      return;
-    }
-
-    // Get updated subscription from Stripe
     const subscription = await stripe.subscriptions.retrieve(subscriptionId);
     const startDate = new Date(subscription.current_period_start * 1000);
-    const endDate = new Date(subscription.current_period_end * 1000); // New 30-day period
+    const endDate = new Date(subscription.current_period_end * 1000);
+    const amount = subscription.items?.data?.[0]?.price?.unit_amount != null
+      ? subscription.items.data[0].price.unit_amount / 100
+      : null;
 
-    // Update subscription dates for new billing period (automatic renewal after 30 days)
-    if (!client.subscription) {
-      client.subscription = {};
+    const client = await Client.findOne({ 'subscription.stripeSubscriptionId': subscriptionId });
+    if (client) {
+      if (!client.subscription) client.subscription = {};
+      client.subscription.status = 'active';
+      client.subscription.startDate = startDate;
+      client.subscription.endDate = endDate;
+      if (amount != null) client.subscription.amount = amount;
+      await client.save();
+      console.log('Subscription renewed for client:', client._id, 'New period:', startDate, 'to', endDate);
+      return;
     }
 
-    client.subscription.status = 'active';
-    client.subscription.startDate = startDate;
-    client.subscription.endDate = endDate; // Next 30 days
-    client.subscription.amount = subscription.items.data[0]?.price?.unit_amount / 100 || client.subscription.amount || 50;
-
-    await client.save();
-    console.log('Subscription renewed for client:', client._id, 'New period:', startDate, 'to', endDate);
+    const provider = await Provider.findOne({ 'subscription.stripeSubscriptionId': subscriptionId });
+    if (provider) {
+      if (!provider.subscription) provider.subscription = {};
+      provider.subscription.status = 'active';
+      provider.subscription.startDate = startDate;
+      provider.subscription.endDate = endDate;
+      if (amount != null) provider.subscription.amount = amount;
+      await provider.save();
+      console.log('Subscription renewed for provider:', provider._id, 'New period:', startDate, 'to', endDate);
+    }
   } catch (error) {
     console.error('Error handling invoice payment succeeded:', error);
   }
@@ -213,23 +274,24 @@ async function handleInvoicePaymentSucceeded(invoice) {
 // Handle failed invoice payment
 async function handleInvoicePaymentFailed(invoice) {
   try {
-    const subscriptionId = invoice.subscription;
-    if (!subscriptionId) {
+    const subscriptionId = typeof invoice.subscription === 'string'
+      ? invoice.subscription
+      : invoice.subscription?.id;
+    if (!subscriptionId) return;
+
+    const client = await Client.findOne({ 'subscription.stripeSubscriptionId': subscriptionId });
+    if (client) {
+      client.subscription.status = 'expired';
+      await client.save();
+      console.log('Subscription payment failed for client:', client._id);
       return;
     }
-
-    const client = await Client.findOne({
-      'subscription.stripeSubscriptionId': subscriptionId
-    });
-
-    if (!client) {
-      return;
+    const provider = await Provider.findOne({ 'subscription.stripeSubscriptionId': subscriptionId });
+    if (provider) {
+      if (provider.subscription) provider.subscription.status = 'expired';
+      await provider.save();
+      console.log('Subscription payment failed for provider:', provider._id);
     }
-
-    // Mark subscription as expired if payment fails
-    client.subscription.status = 'expired';
-    await client.save();
-    console.log('Subscription payment failed for client:', client._id);
   } catch (error) {
     console.error('Error handling invoice payment failed:', error);
   }

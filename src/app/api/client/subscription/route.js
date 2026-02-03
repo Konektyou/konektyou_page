@@ -5,8 +5,6 @@ import AdminSettings from '@/models/AdminSettings';
 const jwt = require('jsonwebtoken');
 const Stripe = require('stripe');
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
-
 // Get subscription status
 export async function GET(request) {
   try {
@@ -101,101 +99,103 @@ export async function POST(request) {
       });
     }
 
-    // Create Stripe checkout session
+    const stripeSecretKey = (process.env.STRIPE_SECRET_KEY || 'sk_test_51MAu7gI7BEvOC2zJTYQxB3JsfS5rINOJylLzJuhWTG3p4WAvTRQ1us6Fof8Z2UZEi15rxmAyXTbNnny1stNz4d7200w9BfzrOR').trim();
+    if (!stripeSecretKey) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Stripe is not configured. Add STRIPE_SECRET_KEY to your .env file (get your key from https://dashboard.stripe.com/apikeys). Restart the server after adding it.'
+        },
+        { status: 400 }
+      );
+    }
+
+    // Base URL for Stripe redirects (success/cancel)
+    let baseUrl = (process.env.NEXT_PUBLIC_APP_URL || '').trim();
+    if (!baseUrl && typeof request.url === 'string') {
+      try {
+        baseUrl = new URL(request.url).origin;
+      } catch (_) {}
+    }
+    baseUrl = baseUrl || 'http://localhost:3000';
+
     let checkoutUrl = null;
     let stripeCustomerId = client.subscription?.stripeCustomerId;
 
-    if (stripe && process.env.STRIPE_SECRET_KEY) {
-      try {
-        // Create or get Stripe customer
-        if (!stripeCustomerId) {
-          const customer = await stripe.customers.create({
-            email: client.email,
-            name: client.name,
-            metadata: {
-              clientId: clientId.toString()
-            }
-          });
-          stripeCustomerId = customer.id;
-        }
+    try {
+      const stripeInstance = new Stripe(stripeSecretKey);
 
-        // Create checkout session for recurring subscription
-        const session = await stripe.checkout.sessions.create({
-          customer: stripeCustomerId,
-          payment_method_types: ['card'],
-          mode: 'subscription',
-          line_items: [
-            {
-              price_data: {
-                currency: 'cad',
-                product_data: {
-                  name: 'Premium Subscription',
-                  description: 'Monthly premium subscription - Unlimited provider bookings per month. Automatically renews monthly.'
-                },
-                unit_amount: subscriptionPrice * 100, // Convert to cents
-                recurring: {
-                  interval: 'month'
-                }
+      // Create or get Stripe customer
+      if (!stripeCustomerId) {
+        const customer = await stripeInstance.customers.create({
+          email: client.email,
+          name: client.name,
+          metadata: {
+            clientId: clientId.toString()
+          }
+        });
+        stripeCustomerId = customer.id;
+      }
+
+      // Create checkout session – user is redirected to Stripe to pay; subscription is set to premium only after webhook (checkout.session.completed)
+      const session = await stripeInstance.checkout.sessions.create({
+        customer: stripeCustomerId,
+        payment_method_types: ['card'],
+        mode: 'subscription',
+        line_items: [
+          {
+            price_data: {
+              currency: 'cad',
+              product_data: {
+                name: 'Premium Subscription',
+                description: 'Monthly premium subscription - Unlimited provider bookings per month. Automatically renews monthly.'
               },
-              quantity: 1
-            }
-          ],
-          success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/client/subscription?subscription=success`,
-          cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/client/subscription?subscription=cancelled`,
+              unit_amount: Math.round(subscriptionPrice * 100), // cents
+              recurring: {
+                interval: 'month'
+              }
+            },
+            quantity: 1
+          }
+        ],
+        success_url: `${baseUrl}/client/subscription?subscription=success`,
+        cancel_url: `${baseUrl}/client/subscription?subscription=cancelled`,
+        metadata: {
+          clientId: clientId.toString(),
+          planType: 'premium'
+        },
+        subscription_data: {
           metadata: {
             clientId: clientId.toString(),
             planType: 'premium'
-          },
-          subscription_data: {
-            metadata: {
-              clientId: clientId.toString(),
-              planType: 'premium'
-            }
           }
-        });
-
-        checkoutUrl = session.url;
-      } catch (stripeError) {
-        console.error('Stripe error:', stripeError);
-        // Continue without Stripe if not configured
-      }
-    }
-
-    // If Stripe is not configured, activate subscription directly (for testing/development)
-    if (!checkoutUrl) {
-      const startDate = new Date();
-      const endDate = new Date();
-      endDate.setMonth(endDate.getMonth() + 1); // 1 month from now
-
-      // Save customer ID for future Stripe integration
-      if (!client.subscription) {
-        client.subscription = {};
-      }
-
-      client.subscription.planType = 'premium';
-      client.subscription.status = 'active';
-      client.subscription.startDate = startDate;
-      client.subscription.endDate = endDate;
-      client.subscription.amount = subscriptionPrice;
-      if (stripeCustomerId) {
-        client.subscription.stripeCustomerId = stripeCustomerId;
-      }
-
-      await client.save();
-
-      return NextResponse.json({
-        success: true,
-        message: 'Subscription activated',
-        subscription: client.subscription
+        }
       });
+
+      checkoutUrl = session.url;
+    } catch (stripeError) {
+      console.error('Stripe checkout error:', stripeError);
+      return NextResponse.json(
+        {
+          success: false,
+          message: stripeError?.message || 'Could not start payment. Check STRIPE_SECRET_KEY and try again.'
+        },
+        { status: 400 }
+      );
     }
 
-    // Return checkout URL
+    if (!checkoutUrl) {
+      return NextResponse.json(
+        { success: false, message: 'Could not create payment link. Please try again.' },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json({
       success: true,
       requiresPayment: true,
       checkoutUrl,
-      message: 'Redirect to payment'
+      message: 'Redirect to Stripe to complete payment. Subscription will be activated only after payment succeeds.'
     });
   } catch (error) {
     console.error('Subscription creation error:', error);

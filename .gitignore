@@ -18,6 +18,11 @@ out
 /coverage
 
 
+# env files (never commit secrets)
+.env
+.env.local
+.env.*.local
+
 # misc
 .DS_Store
 *.pem

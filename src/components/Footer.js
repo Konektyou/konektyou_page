@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function Footer() {
   return (
@@ -61,16 +62,16 @@ export default function Footer() {
             <h4 className="text-base sm:text-lg font-semibold mb-4 sm:mb-6">Support</h4>
             <ul className="space-y-2 sm:space-y-3">
               <li>
-                <a href="#" className="text-sm sm:text-base text-gray-400 hover:text-white transition-colors">Help Center</a>
+                <Link href="/support" className="text-sm sm:text-base text-gray-400 hover:text-white transition-colors">Help Center</Link>
               </li>
               <li>
-                <a href="#" className="text-sm sm:text-base text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
+                <Link href="/privacy-policy" className="text-sm sm:text-base text-gray-400 hover:text-white transition-colors">Privacy Policy</Link>
               </li>
               <li>
-                <a href="#" className="text-sm sm:text-base text-gray-400 hover:text-white transition-colors">Terms of Service</a>
+                <Link href="/support" className="text-sm sm:text-base text-gray-400 hover:text-white transition-colors">Terms of Service</Link>
               </li>
               <li>
-                <a href="#" className="text-sm sm:text-base text-gray-400 hover:text-white transition-colors">FAQ</a>
+                <Link href="/support#faq" className="text-sm sm:text-base text-gray-400 hover:text-white transition-colors">FAQ</Link>
               </li>
             </ul>
           </div>

@@ -27,7 +27,7 @@ export async function POST(request) {
 
       await transporter.sendMail({
         from: fromEmail,
-        to: 'info@konektly.ca',
+        to: 'hello@konektly.ca',
         replyTo: email,
         subject: `[Support] [${categoryLabel}] ${subject}`,
         html: `

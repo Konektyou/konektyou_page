@@ -58,8 +58,8 @@ export default async function PrivacyPolicyPage() {
           ) : (
             <p className="text-gray-500 text-center py-12">
               Unable to load the Privacy Policy at this time. Please try again later or email{' '}
-              <a href="mailto:info@konektly.ca" className="text-black underline">
-                info@konektly.ca
+              <a href="mailto:hello@konektly.ca" className="text-black underline">
+                hello@konektly.ca
               </a>
               .
             </p>
@@ -75,8 +75,8 @@ export default async function PrivacyPolicyPage() {
           </h2>
           <p className="text-gray-600 text-sm sm:text-base">
             Contact our privacy team at{' '}
-            <a href="mailto:info@konektly.ca" className="text-black font-medium underline underline-offset-2">
-              info@konektly.ca
+            <a href="mailto:hello@konektly.ca" className="text-black font-medium underline underline-offset-2">
+              hello@konektly.ca
             </a>
           </p>
         </div>

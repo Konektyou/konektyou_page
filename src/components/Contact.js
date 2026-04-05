@@ -86,7 +86,7 @@ export default function Contact() {
                 and how we can help connect you with the right professionals.
               </p>
               <div className="space-y-1 sm:space-y-2">
-                <p className="text-sm sm:text-base text-gray-600">Email: info@konektly.ca</p>
+                <p className="text-sm sm:text-base text-gray-600">Email: hello@konektly.ca</p>
                 <p className="text-sm sm:text-base text-gray-600">Website: www.konektly.ca</p>
               </div>
             </div>

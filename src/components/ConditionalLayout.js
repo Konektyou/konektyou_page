@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import Navigation from './Navigation';
 import Footer from './Footer';
+import AnnouncementBanner from './AnnouncementBanner';
 
 export default function ConditionalLayout({ children }) {
   const pathname = usePathname();
@@ -20,6 +21,7 @@ export default function ConditionalLayout({ children }) {
 
   return (
     <>
+      {!hideNavFooter && <AnnouncementBanner />}
       {!hideNavFooter && <Navigation />}
       <div className={!hideNavFooter ? 'pt-20' : ''}>
         {children}

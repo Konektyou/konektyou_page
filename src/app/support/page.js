@@ -1,16 +1,12 @@
 import SupportContactForm from '@/components/SupportContactForm';
 
-export const revalidate = 1800;
+export const revalidate = 1800; // Revalidate every 30 min — picks up FAQ changes from backend automatically
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'https://api.konektly.ca';
 
 async function getFAQs() {
-  const token = process.env.BACKEND_SERVICE_TOKEN;
-  if (!token) return null;
-
   try {
     const res = await fetch(`${BACKEND_API_URL}/api/v1/support/faq/`, {
-      headers: { Authorization: `Bearer ${token}` },
       next: { revalidate },
     });
     if (!res.ok) return null;
@@ -88,7 +84,7 @@ export default async function SupportPage() {
           <div className="text-center mb-10 sm:mb-14">
             <h2 className="text-2xl sm:text-3xl font-bold text-black mb-3">Frequently Asked Questions</h2>
             <p className="text-gray-500 text-sm sm:text-base max-w-xl mx-auto">
-              Common questions about using Konektly.
+              {hasLiveFAQs ? 'Find answers to common questions about using Konektly.' : 'Common questions about using Konektly.'}
             </p>
           </div>
 

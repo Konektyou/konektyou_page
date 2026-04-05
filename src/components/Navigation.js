@@ -52,7 +52,7 @@ export default function Navigation() {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="fixed top-0 w-full bg-white/95 backdrop-blur-sm border-b border-gray-200 z-30"
+        className="w-full bg-white/95 backdrop-blur-sm border-b border-gray-200"
       >
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-14 sm:h-20">

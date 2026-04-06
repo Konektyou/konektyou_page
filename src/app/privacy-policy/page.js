@@ -1,14 +1,14 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-export const revalidate = 3600; // Revalidate every hour — auto-updates when backend publishes a new version
+export const dynamic = 'force-dynamic'; // Always fetch fresh — privacy policy must reflect the latest version immediately
 
 const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'https://api.konektly.ca';
 
 async function getPrivacyPolicy() {
   try {
     const res = await fetch(`${BACKEND_API_URL}/api/v1/legal/privacy/`, {
-      next: { revalidate },
+      cache: 'no-store',
     });
     if (!res.ok) return null;
     const json = await res.json();

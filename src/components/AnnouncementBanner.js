@@ -21,9 +21,19 @@ export default function AnnouncementBanner() {
   return (
     <div className="bg-black text-white text-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-4">
-        <div className="flex-1 text-center">
-          <span className="font-medium">Konektly for iOS is launching this week.</span>
-          <span className="text-gray-400 ml-2 hidden sm:inline">Be among the first to download it on the App Store.</span>
+        <div className="flex-1 text-center flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-3">
+          <span className="font-medium text-xs sm:text-sm leading-snug">
+            <span className="sm:hidden">Konektly is on the App Store.</span>
+            <span className="hidden sm:inline">Konektly for iOS is now available on the App Store.</span>
+          </span>
+          <a
+            href="https://apps.apple.com/us/app/konektly/id6761184414"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block bg-white text-black text-xs font-semibold px-3 py-1 rounded-full hover:bg-gray-200 transition-colors whitespace-nowrap"
+          >
+            Install Now
+          </a>
         </div>
         <button
           onClick={dismiss}

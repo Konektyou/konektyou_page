@@ -34,7 +34,7 @@ const nextConfig = {
         mongoose: false,
       };
     }
-    
+
     return config;
   },
 };

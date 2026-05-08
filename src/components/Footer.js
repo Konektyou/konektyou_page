@@ -21,8 +21,7 @@ export default function Footer() {
               </div>
             </div>
             <p className="text-sm sm:text-base text-gray-400 mb-4 sm:mb-6 max-w-md leading-relaxed">
-              Revolutionizing how you connect with skilled professionals. 
-              Find, book, and get the help you need instantly in your area.
+              On-demand staffing for businesses and contractors. Post short-term openings, apply for jobs, hire, message, and review in one marketplace.
             </p>
             <div className="flex space-x-3 sm:space-x-4">
               <a href="#" className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors">
@@ -71,7 +70,7 @@ export default function Footer() {
                 <a href="#contact" className="text-sm sm:text-base text-gray-400 hover:text-white transition-colors">Contact</a>
               </li>
                   <li>
-                    <a href="#" className="text-sm sm:text-base text-gray-400 hover:text-white transition-colors">Sign up now</a>
+                    <a href="/register" className="text-sm sm:text-base text-gray-400 hover:text-white transition-colors">Sign up now</a>
                   </li>
             </ul>
           </div>

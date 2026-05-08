@@ -1,9 +1,10 @@
 import Hero from '../components/Hero';
 import About from '../components/About';
-import ProblemSolution from '../components/ProblemSolution';
+import HowItWorks from '../components/HowItWorks';
 import HelpCategories from '../components/HelpCategories';
 import Businesses from '../components/Businesses';
-import HowItWorks from '../components/HowItWorks';
+import ProblemSolution from '../components/ProblemSolution';
+import AppDownload from '../components/AppDownload';
 import SignUpForm from '../components/SignUpForm';
 import Contact from '../components/Contact';
 
@@ -12,10 +13,11 @@ export default function Home() {
     <div className="bg-white text-black">
       <Hero />
       <About />
-      <ProblemSolution />
+      <HowItWorks />
       <HelpCategories />
       <Businesses />
-      <HowItWorks />
+      <ProblemSolution />
+      <AppDownload />
       <SignUpForm />
       <Contact />
     </div>

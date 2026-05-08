@@ -1,112 +1,168 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
+import { motion } from 'framer-motion';
 
-// Create a dynamic map component that only renders on client
-const DynamicMap = dynamic(() => import('./MapComponent'), {
-  ssr: false,
-  loading: () => (
-    <div className="h-full w-full bg-gray-100 flex items-center justify-center">
-      <div className="text-gray-500">Loading map...</div>
-    </div>
-  )
-});
+const APP_STORE_URL = 'https://apps.apple.com/us/app/konektly/id6761184414';
+
+const MARKET_SIGNALS = [
+  { label: 'Businesses', value: 'Cover short-staffed moments' },
+  { label: 'Contractors', value: 'Find short-term work' },
+  { label: 'Konektly+', value: 'Early job alerts' },
+];
+
+const WORKFLOW = [
+  { title: 'Business posts a need', meta: 'Role, location, timing', status: 'Open' },
+  { title: 'Contractors apply', meta: 'Profile, skills, availability', status: 'Pending' },
+  { title: 'Business hires', meta: 'Choose the right contractor', status: 'Hired' },
+];
+
+const PLATFORM = ['Phone verification', 'Contractor profiles', 'Business profiles', 'Job applications', 'Messaging', 'Reviews'];
 
 export default function Hero() {
-  const [activeProviders, setActiveProviders] = useState([]);
-  const [currentTextIndex, setCurrentTextIndex] = useState(0);
-  const [isMounted, setIsMounted] = useState(false);
-
-  // Animated text sequence
-  const textSequence = [
-    'Find the help you need near you instantly.'
-  ];
-
-  // Mock service providers data with Toronto coordinates
-  const providers = [
-    { id: 1, name: "Sarah M.", service: "PSW", rating: 4.9, distance: "2 mins away", photo: "👩‍⚕️", position: [43.6532, -79.3832] },
-    { id: 2, name: "Mike R.", service: "Office Support", rating: 4.8, distance: "1 min away", photo: "💼", position: [43.6426, -79.3871] },
-    { id: 3, name: "Lisa K.", service: "PSW", rating: 4.9, distance: "3 mins away", photo: "👩‍⚕️", position: [43.6670, -79.4000] },
-    { id: 4, name: "David L.", service: "Office Support", rating: 4.7, distance: "5 mins away", photo: "💼", position: [43.6300, -79.4200] },
-    { id: 5, name: "Emma S.", service: "PSW", rating: 4.8, distance: "1 min away", photo: "👩‍⚕️", position: [43.6800, -79.3600] },
-    { id: 6, name: "Alex T.", service: "Office Support", rating: 4.9, distance: "4 mins away", photo: "💼", position: [43.6200, -79.3500] }
-  ];
-
-
-  useEffect(() => {
-    // Set mounted state
-    setIsMounted(true);
-
-    // Animated text sequence
-    const textInterval = setInterval(() => {
-      setCurrentTextIndex((prev) => (prev + 1) % textSequence.length);
-    }, 3000);
-
-    // Show providers one by one with delay
-    const showProvidersSequentially = () => {
-      setActiveProviders([]);
-      providers.forEach((provider, index) => {
-        setTimeout(() => {
-          setActiveProviders(prev => [...prev, provider]);
-        }, index * 500);
-      });
-    };
-
-    showProvidersSequentially();
-    const mapInterval = setInterval(showProvidersSequentially, 30000);
-
-    return () => {
-      clearInterval(textInterval);
-      clearInterval(mapInterval);
-    };
-  }, []);
-
-  const handleRoleSelect = (role) => {
-    // Redirect to register page with role parameter
-    window.location.href = `/register?role=${role}`;
-  };
-
-  // Toronto area coordinates - centered higher to avoid text overlap
-  const torontoCenter = [43.7000, -79.4000];
-
   return (
-    <section className="h-[90vh] w-full relative overflow-hidden bg-gray-100">
-      {/* Full-screen 3D Map Background */}
-      <div className="absolute inset-0 z-0 h-full w-full">
-        {isMounted && <DynamicMap 
-          activeProviders={activeProviders} 
-          torontoCenter={torontoCenter}
-          fullScreen={false}
-        />}
-      </div>
+    <section className="relative min-h-[86vh] overflow-hidden bg-[#f8f8f4] border-b border-black/10">
+      <div className="absolute inset-x-0 top-0 h-px bg-black/10" />
+      <div className="absolute right-0 top-0 hidden h-full w-1/2 border-l border-black/10 bg-white/45 lg:block" aria-hidden="true" />
 
-      {/* Overlay Content */}
-      <div className="relative z-10 flex flex-col justify-start items-start px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center mt-20 w-full">
-          {/* Text Sequence */}
-          <div className="mb-8 sm:mb-12 h-32 flex items-center justify-center">
-            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-black mb-4 sm:mb-6 leading-tight drop-shadow-lg text-center">
-              {textSequence[currentTextIndex]}
-            </h1>
+      <div className="relative max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-20 sm:py-24 lg:py-28">
+        <div className="grid lg:grid-cols-[1.02fr_0.98fr] gap-12 lg:gap-16 items-center">
+          <div>
+            <motion.a
+              href={APP_STORE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45 }}
+              className="inline-flex items-center gap-2 border border-black/15 bg-white px-3.5 py-2 text-xs sm:text-sm font-semibold text-black hover:border-black/35 transition-colors"
+            >
+              <span className="h-2 w-2 bg-[#0f766e]" />
+              Now available on the App Store
+            </motion.a>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 22 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.08 }}
+              className="mt-8 max-w-3xl text-5xl sm:text-6xl lg:text-7xl font-semibold text-black leading-[0.98] tracking-normal"
+            >
+              Konektly
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.16 }}
+              className="mt-6 max-w-2xl text-2xl sm:text-3xl lg:text-4xl font-medium leading-tight text-black"
+            >
+              Contractors for short-staffed moments.
+            </motion.p>
+
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.24 }}
+              className="mt-6 max-w-xl text-base sm:text-lg leading-8 text-gray-700"
+            >
+              Konektly connects businesses that need short-term help with contractors ready to work. Post an opening, review applicants, and hire without turning it into a long hiring process.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.32 }}
+              className="mt-9 flex flex-col sm:flex-row gap-3"
+            >
+              <a
+                href={APP_STORE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-12 items-center justify-center gap-3 bg-black px-5 py-3 text-white font-semibold hover:bg-gray-800 transition-colors"
+              >
+                <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+                </svg>
+                Download for iOS
+              </a>
+              <a
+                href="/register"
+                className="inline-flex min-h-12 items-center justify-center border border-black/20 bg-white px-5 py-3 font-semibold text-black hover:border-black/45 transition-colors"
+              >
+                Post a job
+              </a>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.45 }}
+              className="mt-12 grid grid-cols-1 sm:grid-cols-3 border-y border-black/10"
+            >
+              {MARKET_SIGNALS.map((signal) => (
+                <div key={signal.label} className="py-5 sm:px-5 first:pl-0 sm:border-r sm:border-black/10 last:border-r-0">
+                  <div className="text-xs uppercase tracking-[0.18em] text-gray-500">{signal.label}</div>
+                  <div className="mt-2 text-sm font-semibold text-black">{signal.value}</div>
+                </div>
+              ))}
+            </motion.div>
           </div>
 
-          {/* Role Selection Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mb-8">
-            <button
-              onClick={() => handleRoleSelect('client')}
-              className="cursor-pointer bg-white/50 backdrop-blur-sm text-black px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white transition-all shadow-lg border border-gray-200 focus:outline-none focus:ring-0"
-            >
-              For Business
-            </button>
-            <button
-              onClick={() => handleRoleSelect('provider')}
-              className="cursor-pointer bg-white/50 backdrop-blur-sm text-black px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white transition-all shadow-lg border border-gray-200 focus:outline-none focus:ring-0"
-            >
-              For Workers
-            </button>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.18 }}
+            className="relative"
+          >
+            <div className="border border-black/15 bg-white shadow-[18px_18px_0_0_rgba(0,0,0,0.06)]">
+              <div className="flex items-center justify-between border-b border-black/10 px-5 py-4">
+                <div>
+                  <div className="text-xs uppercase tracking-[0.18em] text-gray-500">Marketplace</div>
+                  <div className="mt-1 text-lg font-semibold text-black">How coverage gets filled</div>
+                </div>
+                <div className="flex gap-1.5" aria-hidden="true">
+                  <span className="h-2.5 w-2.5 bg-[#ef4444]" />
+                  <span className="h-2.5 w-2.5 bg-[#f59e0b]" />
+                  <span className="h-2.5 w-2.5 bg-[#0f766e]" />
+                </div>
+              </div>
 
+              <div className="p-5 sm:p-6">
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  <div className="border border-black/10 bg-[#f8f8f4] p-4">
+                    <div className="text-3xl font-semibold text-black">3</div>
+                    <div className="mt-1 text-sm text-gray-600">Core steps</div>
+                  </div>
+                  <div className="border border-black/10 bg-[#ecfdf5] p-4">
+                    <div className="text-3xl font-semibold text-[#0f766e]">20</div>
+                    <div className="mt-1 text-sm text-gray-600">Min Plus head start</div>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  {WORKFLOW.map((item) => (
+                    <div key={item.title} className="flex items-center justify-between gap-4 border border-black/10 p-4">
+                      <div>
+                        <div className="font-semibold text-black">{item.title}</div>
+                        <div className="text-sm text-gray-500">{item.meta}</div>
+                      </div>
+                      <span className="bg-black px-3 py-1 text-xs font-semibold text-white">{item.status}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-6 border-t border-black/10 pt-5">
+                  <div className="mb-3 text-xs uppercase tracking-[0.18em] text-gray-500">Built into the platform</div>
+                  <div className="flex flex-wrap gap-2">
+                    {PLATFORM.map((item) => (
+                      <span key={item} className="border border-black/10 bg-white px-3 py-1.5 text-xs font-medium text-gray-700">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>

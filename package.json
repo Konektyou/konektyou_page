@@ -11,6 +11,7 @@
   "dependencies": {
     "@googlemaps/js-api-loader": "^2.0.1",
     "@googlemaps/react-wrapper": "^1.2.0",
+    "@next/swc-darwin-arm64": "^16.2.4",
     "@stripe/react-stripe-js": "^5.4.1",
     "@stripe/stripe-js": "^8.6.0",
     "0f": "^1.0.0",

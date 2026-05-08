@@ -7,7 +7,7 @@ const COMPARISONS = [
   {
     label: 'Job Flow',
     us: 'Post, apply, hire',
-    them: 'Scattered calls and spreadsheets',
+    them: 'Slow intake and follow-ups',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -80,11 +80,11 @@ export default function SignUpForm() {
             Why Konektly
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-5 leading-tight tracking-tight">
-            Built for staffing,<br />
-            <span className="text-gray-400">not generic bookings.</span>
+            Built for the next way<br />
+            <span className="text-gray-400">businesses hire.</span>
           </h2>
           <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
-            Konektly is built for short-term jobs: businesses post work, workers apply, and businesses hire the right person for the gap.
+            Konektly is built for short-term jobs: businesses post work, workers apply, and hiring happens through a direct marketplace instead of a slow agency-style process.
           </p>
         </motion.div>
 
@@ -100,7 +100,7 @@ export default function SignUpForm() {
           >
             <div className="grid grid-cols-2 gap-3 mb-2 px-1">
               <div className="text-xs font-bold text-black uppercase tracking-wider">Konektly</div>
-              <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">Traditional Platforms</div>
+              <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">Old Hiring</div>
             </div>
 
             {COMPARISONS.map((comp, i) => (

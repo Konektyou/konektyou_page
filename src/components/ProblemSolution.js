@@ -4,8 +4,8 @@ import { motion } from 'framer-motion';
 
 const PROBLEMS = [
   {
-    title: 'Businesses need short-term coverage',
-    body: 'A short-staffed moment can happen fast. Konektly gives businesses a place to post the need and receive worker applications.',
+    title: 'Old hiring is too slow',
+    body: 'When work needs to happen soon, businesses should be able to post the opportunity and see who is ready to apply.',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -13,8 +13,8 @@ const PROBLEMS = [
     ),
   },
   {
-    title: 'Workers need flexible opportunities',
-    body: 'Workers should be able to find nearby short-term work, apply quickly, and get hired without chasing scattered leads.',
+    title: 'Workers need direct access',
+    body: 'Workers should be able to find nearby short-term work, apply quickly, and get hired without chasing scattered leads or waiting on middlemen.',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -57,8 +57,8 @@ export default function ProblemSolution() {
             Why Konektly Exists
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black leading-tight tracking-tight">
-            Short-staffed moments<br />
-            <span className="text-gray-400">need faster connections.</span>
+            Hiring should move<br />
+            <span className="text-gray-400">at the speed of the work.</span>
           </h2>
         </motion.div>
 
@@ -122,10 +122,10 @@ export default function ProblemSolution() {
                 The Solution
               </div>
               <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight mb-4">
-                Konektly connects businesses with workers for short-term work, then supports the relationship with profiles, messaging, and reviews.
+                Not a staffing agency. A direct hiring marketplace where businesses and workers find each other faster.
               </h3>
               <p className="text-gray-400 text-base sm:text-lg">
-                The website should reflect the product: worker and business profiles, short-term jobs, and fast hiring for staffing gaps.
+                The product is about access: worker and business profiles, short-term jobs, applications, messaging, and reviews in one place.
               </p>
             </div>
 

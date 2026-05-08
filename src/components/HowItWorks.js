@@ -100,10 +100,10 @@ export default function HowItWorks() {
             Simple by Design
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-5 leading-tight tracking-tight">
-            From short-staffed to covered.
+            Post. Apply. Hire.
           </h2>
           <p className="text-base sm:text-lg text-gray-600 max-w-xl mx-auto">
-            Konektly helps businesses find workers for short-term work without running a traditional hiring process.
+            Konektly makes hiring feel direct: businesses publish work, workers apply, and the best match can move forward in-app.
           </p>
         </motion.div>
 
@@ -158,7 +158,7 @@ export default function HowItWorks() {
           transition={{ duration: 0.5 }}
         >
           <div className="text-center mb-8">
-            <h3 className="text-xl sm:text-2xl font-bold text-black">A cleaner way to fill short-term work.</h3>
+            <h3 className="text-xl sm:text-2xl font-bold text-black">A cleaner way to hire for short-term work.</h3>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
             {FEATURES.map((feat, i) => (

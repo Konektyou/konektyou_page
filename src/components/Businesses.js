@@ -81,11 +81,11 @@ export default function Businesses() {
           </div>
           <div className="grid lg:grid-cols-2 gap-6 items-end">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black leading-tight tracking-tight">
-              Post openings, review workers,<br />
-              <span className="text-gray-400">and cover staffing gaps.</span>
+              Post work, review people,<br />
+              <span className="text-gray-400">and hire directly.</span>
             </h2>
             <p className="text-base sm:text-lg text-gray-600 leading-relaxed lg:text-right">
-              Konektly helps businesses find workers for short-term and short-staffed moments without turning every gap into a long hiring process.
+              Konektly helps businesses reach available workers for short-term work without turning every opening into a long recruitment process.
             </p>
           </div>
         </motion.div>
@@ -151,14 +151,14 @@ export default function Businesses() {
                 {/* Active openings */}
                 <div className="mb-4">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm font-semibold text-black">Open Staffing Needs</span>
+                    <span className="text-sm font-semibold text-black">Open Work</span>
                     <span className="text-xs text-gray-500">Today</span>
                   </div>
                   <div className="space-y-2.5">
                     {[
                       { name: 'Warehouse support', time: '8:00 AM - 4:00 PM', status: 'Hired', color: 'bg-green-50 text-green-700 border-green-100' },
                       { name: 'Event setup', time: '12:00 PM - 8:00 PM', status: 'Open', color: 'bg-blue-50 text-blue-700 border-blue-100' },
-                      { name: 'Night coverage', time: '11:00 PM - 7:00 AM', status: 'Pending', color: 'bg-yellow-50 text-yellow-700 border-yellow-100' },
+                      { name: 'Night shift', time: '11:00 PM - 7:00 AM', status: 'Pending', color: 'bg-yellow-50 text-yellow-700 border-yellow-100' },
                     ].map((shift, i) => (
                       <div key={i} className="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-gray-50">
                         <div>
@@ -194,7 +194,7 @@ export default function Businesses() {
           className="flex flex-col sm:flex-row items-center justify-between gap-6 bg-black rounded-2xl p-7 sm:p-8"
         >
           <div>
-            <h3 className="text-lg sm:text-xl font-bold text-white mb-1">Ready to cover your next staffing gap?</h3>
+            <h3 className="text-lg sm:text-xl font-bold text-white mb-1">Ready to hire your next worker?</h3>
             <p className="text-sm text-gray-400">Create a business profile, verify your account, and start reaching workers on Konektly.</p>
           </div>
           <a

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 const CATEGORIES = [
   {
-    name: 'Post Short-Term Needs',
+    name: 'Post Short-Term Work',
     description: 'Businesses create openings with title, details, address or GPS location, requirements, and timing.',
     examples: ['Role Details', 'Timing', 'Location', 'Requirements'],
     icon: (
@@ -91,14 +91,14 @@ export default function HelpCategories() {
         >
           <div className="inline-flex items-center px-4 py-2 bg-gray-100 rounded-full text-sm font-medium text-gray-700 mb-6">
             <span className="w-2 h-2 bg-black rounded-full mr-2" />
-            Services
+            Marketplace
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-5 leading-tight tracking-tight">
-            Built around short-term work,<br />
+            Built around direct hiring,<br />
             <span className="text-gray-400">not generic service cards.</span>
           </h2>
           <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            The Konektly app is organized around businesses, workers, short-term openings, applications, subscriptions, messaging, and reviews.
+            The Konektly app is organized around businesses, workers, short-term openings, applications, messaging, and reviews.
           </p>
         </motion.div>
 

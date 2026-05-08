@@ -5,18 +5,18 @@ import { motion } from 'framer-motion';
 const APP_STORE_URL = 'https://apps.apple.com/us/app/konektly/id6761184414';
 
 const MARKET_SIGNALS = [
-  { label: 'Businesses', value: 'Cover short-staffed moments' },
-  { label: 'Workers', value: 'Find short-term work' },
-  { label: 'Konektly+', value: 'Early job alerts' },
+  { label: 'Businesses', value: 'Post work. Hire directly' },
+  { label: 'Workers', value: 'Apply to nearby jobs' },
+  { label: 'Konektly+', value: 'Early access to work' },
 ];
 
 const WORKFLOW = [
-  { title: 'Business posts a need', meta: 'Role, location, timing', status: 'Open' },
-  { title: 'Workers apply', meta: 'Profile, skills, availability', status: 'Pending' },
-  { title: 'Business hires', meta: 'Choose the right worker', status: 'Hired' },
+  { title: 'Business posts work', meta: 'Role, location, timing', status: 'Open' },
+  { title: 'Workers apply directly', meta: 'Profile, skills, availability', status: 'Pending' },
+  { title: 'Business hires in-app', meta: 'Choose the right worker', status: 'Hired' },
 ];
 
-const PLATFORM = ['Phone verification', 'Worker profiles', 'Business profiles', 'Job applications', 'Messaging', 'Reviews'];
+const PLATFORM = ['Phone verification', 'Worker profiles', 'Business profiles', 'Direct applications', 'Messaging', 'Reviews'];
 
 export default function Hero() {
   return (
@@ -55,7 +55,7 @@ export default function Hero() {
               transition={{ duration: 0.55, delay: 0.16 }}
               className="mt-6 max-w-2xl text-2xl sm:text-3xl lg:text-4xl font-medium leading-tight text-black"
             >
-              Workers for short-staffed moments.
+              A new way to hire for short-term work.
             </motion.p>
 
             <motion.p
@@ -64,7 +64,7 @@ export default function Hero() {
               transition={{ duration: 0.55, delay: 0.24 }}
               className="mt-6 max-w-xl text-base sm:text-lg leading-8 text-gray-700"
             >
-              Konektly connects businesses that need short-term help with workers ready to work. Post an opening, review applicants, and hire without turning it into a long hiring process.
+              Konektly turns hiring into a direct marketplace. Businesses post work, workers apply from their phone, and both sides move faster without the old hiring playbook.
             </motion.p>
 
             <motion.div
@@ -116,8 +116,8 @@ export default function Hero() {
             <div className="border border-black/15 bg-white shadow-[18px_18px_0_0_rgba(0,0,0,0.06)]">
               <div className="flex items-center justify-between border-b border-black/10 px-5 py-4">
                 <div>
-                  <div className="text-xs uppercase tracking-[0.18em] text-gray-500">Marketplace</div>
-                  <div className="mt-1 text-lg font-semibold text-black">How coverage gets filled</div>
+                  <div className="text-xs uppercase tracking-[0.18em] text-gray-500">Hiring marketplace</div>
+                  <div className="mt-1 text-lg font-semibold text-black">How work gets hired</div>
                 </div>
                 <div className="flex gap-1.5" aria-hidden="true">
                   <span className="h-2.5 w-2.5 bg-[#ef4444]" />

@@ -15,7 +15,7 @@ const CATEGORIES = [
   },
   {
     name: 'Find Nearby Work',
-    description: 'Contractors browse open jobs by location, postal code, radius, and feed filters including today and verified businesses.',
+    description: 'Workers browse open jobs by location, postal code, radius, and feed filters including today and verified businesses.',
     examples: ['Nearby Jobs', 'Today', 'Verified', 'Filters'],
     icon: (
       <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -25,7 +25,7 @@ const CATEGORIES = [
   },
   {
     name: 'Swipe and Apply',
-    description: 'Contractors can like or skip jobs, hide already-seen jobs, and apply once per job with a cover note.',
+    description: 'Workers can like or skip jobs, hide already-seen jobs, and apply once per job with a cover note.',
     examples: ['Swipe Feed', 'Apply Once', 'Cover Note', 'Applications'],
     icon: (
       <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -34,8 +34,8 @@ const CATEGORIES = [
     ),
   },
   {
-    name: 'Hire Contractors',
-    description: 'Businesses review applications, inspect public contractor profiles, and hire an applicant when ready.',
+    name: 'Hire Workers',
+    description: 'Businesses review applications, inspect public worker profiles, and hire an applicant when ready.',
     examples: ['Public Profiles', 'Skills', 'Experience', 'Ratings'],
     icon: (
       <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -98,7 +98,7 @@ export default function HelpCategories() {
             <span className="text-gray-400">not generic service cards.</span>
           </h2>
           <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            The Konektly app is organized around businesses, contractors, short-term openings, applications, subscriptions, messaging, and reviews.
+            The Konektly app is organized around businesses, workers, short-term openings, applications, subscriptions, messaging, and reviews.
           </p>
         </motion.div>
 
@@ -152,7 +152,7 @@ export default function HelpCategories() {
           className="text-center mt-12 sm:mt-16"
         >
           <p className="text-gray-500 text-sm sm:text-base mb-4">
-            Download the app to use the contractor and business marketplace.
+            Download the app to use the worker and business marketplace.
           </p>
           <a
             href="https://apps.apple.com/us/app/konektly/id6761184414"

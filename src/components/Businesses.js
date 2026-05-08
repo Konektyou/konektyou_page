@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 const BENEFITS = [
   {
     title: 'Post Openings Fast',
-    body: 'Create a short-term opening with location, timing, and requirements so contractors can apply from the app.',
+    body: 'Create a short-term opening with location, timing, and requirements so workers can apply from the app.',
     color: 'text-red-500',
     bg: 'bg-red-50',
     border: 'border-red-100',
@@ -18,7 +18,7 @@ const BENEFITS = [
   },
   {
     title: 'Review Applications',
-    body: 'See pending applicants, public contractor profiles, skills, experience, ratings, and verification status before hiring.',
+    body: 'See pending applicants, public worker profiles, skills, experience, ratings, and verification status before hiring.',
     color: 'text-green-600',
     bg: 'bg-green-50',
     border: 'border-green-100',
@@ -30,7 +30,7 @@ const BENEFITS = [
   },
   {
     title: 'Hire for the Gap',
-    body: 'Choose the contractor who fits the work and move faster than a traditional hiring process.',
+    body: 'Choose the worker who fits the work and move faster than a traditional hiring process.',
     color: 'text-blue-600',
     bg: 'bg-blue-50',
     border: 'border-blue-100',
@@ -57,7 +57,7 @@ const BENEFITS = [
 const METRICS = [
   { value: 'Open', label: 'Job posted' },
   { value: 'Pending', label: 'Applications' },
-  { value: 'Hired', label: 'Contractor selected' },
+  { value: 'Hired', label: 'Worker selected' },
 ];
 
 export default function Businesses() {
@@ -81,11 +81,11 @@ export default function Businesses() {
           </div>
           <div className="grid lg:grid-cols-2 gap-6 items-end">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black leading-tight tracking-tight">
-              Post openings, review contractors,<br />
+              Post openings, review workers,<br />
               <span className="text-gray-400">and cover staffing gaps.</span>
             </h2>
             <p className="text-base sm:text-lg text-gray-600 leading-relaxed lg:text-right">
-              Konektly helps businesses find contractors for short-term and short-staffed moments without turning every gap into a long hiring process.
+              Konektly helps businesses find workers for short-term and short-staffed moments without turning every gap into a long hiring process.
             </p>
           </div>
         </motion.div>
@@ -195,7 +195,7 @@ export default function Businesses() {
         >
           <div>
             <h3 className="text-lg sm:text-xl font-bold text-white mb-1">Ready to cover your next staffing gap?</h3>
-            <p className="text-sm text-gray-400">Create a business profile, verify your account, and start reaching contractors on Konektly.</p>
+            <p className="text-sm text-gray-400">Create a business profile, verify your account, and start reaching workers on Konektly.</p>
           </div>
           <a
             href="/register"

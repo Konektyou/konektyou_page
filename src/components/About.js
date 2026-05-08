@@ -4,8 +4,8 @@ import { motion } from 'framer-motion';
 
 const PLATFORM_FEATURES = [
   {
-    title: 'Contractor Profiles',
-    description: 'Contractors show skills, experience, availability, ratings, and verification status.',
+    title: 'Worker Profiles',
+    description: 'Workers show skills, experience, availability, ratings, and verification status.',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -14,7 +14,7 @@ const PLATFORM_FEATURES = [
   },
   {
     title: 'Job Applications',
-    description: 'Businesses post short-term openings and contractors apply with a note from the app.',
+    description: 'Businesses post short-term openings and workers apply with a note from the app.',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -23,7 +23,7 @@ const PLATFORM_FEATURES = [
   },
   {
     title: 'Location-Aware Feed',
-    description: 'Contractors can discover open jobs by GPS or postal code, with filters for today and verified businesses.',
+    description: 'Workers can discover open jobs by GPS or postal code, with filters for today and verified businesses.',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -33,7 +33,7 @@ const PLATFORM_FEATURES = [
   },
   {
     title: 'Fast Hiring',
-    description: 'Businesses review applicants and hire the contractor who fits the work.',
+    description: 'Businesses review applicants and hire the worker who fits the work.',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -42,7 +42,7 @@ const PLATFORM_FEATURES = [
   },
 ];
 
-const TRUST_BADGES = ['Phone Verification', 'Business Profiles', 'Contractor Skills', 'Short-Term Work'];
+const TRUST_BADGES = ['Phone Verification', 'Business Profiles', 'Worker Skills', 'Short-Term Work'];
 
 const container = {
   hidden: {},
@@ -88,10 +88,10 @@ export default function About() {
               <span className="text-gray-400">you are short-staffed.</span>
             </h2>
             <p className="text-base sm:text-lg text-gray-600 leading-relaxed mb-8">
-              Konektly is built for short-term staffing: businesses post work with timing and location, while contractors browse nearby opportunities and apply from their phone.
+              Konektly is built for short-term staffing: businesses post work with timing and location, while workers browse nearby opportunities and apply from their phone.
             </p>
             <p className="text-base sm:text-lg text-gray-600 leading-relaxed mb-10">
-              The platform supports contractor and business onboarding, verification, applications, hiring, in-app messaging, and reviews.
+              The platform supports worker and business onboarding, verification, applications, hiring, in-app messaging, and reviews.
             </p>
 
             {/* Trust badges */}

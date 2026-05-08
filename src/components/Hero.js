@@ -6,17 +6,17 @@ const APP_STORE_URL = 'https://apps.apple.com/us/app/konektly/id6761184414';
 
 const MARKET_SIGNALS = [
   { label: 'Businesses', value: 'Cover short-staffed moments' },
-  { label: 'Contractors', value: 'Find short-term work' },
+  { label: 'Workers', value: 'Find short-term work' },
   { label: 'Konektly+', value: 'Early job alerts' },
 ];
 
 const WORKFLOW = [
   { title: 'Business posts a need', meta: 'Role, location, timing', status: 'Open' },
-  { title: 'Contractors apply', meta: 'Profile, skills, availability', status: 'Pending' },
-  { title: 'Business hires', meta: 'Choose the right contractor', status: 'Hired' },
+  { title: 'Workers apply', meta: 'Profile, skills, availability', status: 'Pending' },
+  { title: 'Business hires', meta: 'Choose the right worker', status: 'Hired' },
 ];
 
-const PLATFORM = ['Phone verification', 'Contractor profiles', 'Business profiles', 'Job applications', 'Messaging', 'Reviews'];
+const PLATFORM = ['Phone verification', 'Worker profiles', 'Business profiles', 'Job applications', 'Messaging', 'Reviews'];
 
 export default function Hero() {
   return (
@@ -55,7 +55,7 @@ export default function Hero() {
               transition={{ duration: 0.55, delay: 0.16 }}
               className="mt-6 max-w-2xl text-2xl sm:text-3xl lg:text-4xl font-medium leading-tight text-black"
             >
-              Contractors for short-staffed moments.
+              Workers for short-staffed moments.
             </motion.p>
 
             <motion.p
@@ -64,7 +64,7 @@ export default function Hero() {
               transition={{ duration: 0.55, delay: 0.24 }}
               className="mt-6 max-w-xl text-base sm:text-lg leading-8 text-gray-700"
             >
-              Konektly connects businesses that need short-term help with contractors ready to work. Post an opening, review applicants, and hire without turning it into a long hiring process.
+              Konektly connects businesses that need short-term help with workers ready to work. Post an opening, review applicants, and hire without turning it into a long hiring process.
             </motion.p>
 
             <motion.div

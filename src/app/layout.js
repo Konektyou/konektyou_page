@@ -10,7 +10,7 @@ const inter = Inter({
 export const metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://konektly.ca'),
   title: "Konektly - On-Demand Staffing Marketplace",
-  description: "Konektly connects short-staffed businesses with contractors ready to take short-term work.",
+  description: "Konektly connects short-staffed businesses with workers ready to take short-term work.",
   icons: {
     icon: '/logo.png',
     shortcut: '/logo.png',
@@ -21,14 +21,14 @@ export const metadata = {
   },
   openGraph: {
     title: "Konektly - On-Demand Staffing Marketplace",
-    description: "Konektly connects short-staffed businesses with contractors ready to take short-term work.",
+    description: "Konektly connects short-staffed businesses with workers ready to take short-term work.",
     images: ['/logo.png'],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: "Konektly - On-Demand Staffing Marketplace",
-    description: "Konektly connects short-staffed businesses with contractors ready to take short-term work.",
+    description: "Konektly connects short-staffed businesses with workers ready to take short-term work.",
     images: ['/logo.png'],
   },
 };

@@ -6,7 +6,7 @@ const APP_STORE_URL = 'https://apps.apple.com/us/app/konektly/id6761184414';
 
 const FEATURES = [
   {
-    title: 'Contractor and Business Roles',
+    title: 'Worker and Business Roles',
     body: 'Choose the right role during onboarding and see the app built around your workflow.',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -17,7 +17,7 @@ const FEATURES = [
   },
   {
     title: 'Job Feed and Applications',
-    body: 'Contractors browse nearby jobs, swipe through opportunities, and apply once per job.',
+    body: 'Workers browse nearby jobs, swipe through opportunities, and apply once per job.',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -26,7 +26,7 @@ const FEATURES = [
   },
   {
     title: 'Business Hiring Tools',
-    body: 'Businesses post openings, review applicants, and hire contractors for short-term work.',
+    body: 'Businesses post openings, review applicants, and hire workers for short-term work.',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -143,7 +143,7 @@ export default function AppDownload() {
               </motion.div>
             ))}
 
-            {/* Contractor CTA */}
+            {/* Worker CTA */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -156,7 +156,7 @@ export default function AppDownload() {
                 href="/register?role=provider"
                 className="inline-flex items-center gap-2 text-white font-semibold text-sm hover:text-gray-300 transition-colors"
               >
-                Join as a Contractor - apply for jobs near you
+                Join as a Worker - apply for jobs near you
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>

@@ -12,8 +12,8 @@ export default function BusinessWaiver() {
 
   const waiverRequirements = [
     {
-      title: 'Talent is Independent Contractor',
-      description: 'All service providers are independent contractors, not employees of your business.'
+      title: 'Talent is Independent Worker',
+      description: 'All service providers are independent workers, not employees of your business.'
     },
     {
       title: 'First 30 Shifts Belong to Konektly',

@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 const PROBLEMS = [
   {
     title: 'Businesses need short-term coverage',
-    body: 'A short-staffed moment can happen fast. Konektly gives businesses a place to post the need and receive contractor applications.',
+    body: 'A short-staffed moment can happen fast. Konektly gives businesses a place to post the need and receive worker applications.',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -13,8 +13,8 @@ const PROBLEMS = [
     ),
   },
   {
-    title: 'Contractors need flexible opportunities',
-    body: 'Contractors should be able to find nearby short-term work, apply quickly, and get hired without chasing scattered leads.',
+    title: 'Workers need flexible opportunities',
+    body: 'Workers should be able to find nearby short-term work, apply quickly, and get hired without chasing scattered leads.',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -34,9 +34,9 @@ const PROBLEMS = [
 
 const SOLUTION_POINTS = [
   'Businesses post openings with role details, timing, and location',
-  'Contractors browse nearby jobs, swipe, and apply',
-  'Businesses review applicants and hire the right contractor',
-  'Konektly+ contractors get priority job notifications',
+  'Workers browse nearby jobs, swipe, and apply',
+  'Businesses review applicants and hire the right worker',
+  'Konektly+ workers get priority job notifications',
 ];
 
 export default function ProblemSolution() {
@@ -122,10 +122,10 @@ export default function ProblemSolution() {
                 The Solution
               </div>
               <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight mb-4">
-                Konektly connects businesses with contractors for short-term work, then supports the relationship with profiles, messaging, and reviews.
+                Konektly connects businesses with workers for short-term work, then supports the relationship with profiles, messaging, and reviews.
               </h3>
               <p className="text-gray-400 text-base sm:text-lg">
-                The website should reflect the product: contractor and business profiles, short-term jobs, and fast hiring for staffing gaps.
+                The website should reflect the product: worker and business profiles, short-term jobs, and fast hiring for staffing gaps.
               </p>
             </div>
 

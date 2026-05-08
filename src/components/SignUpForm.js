@@ -15,7 +15,7 @@ const COMPARISONS = [
     ),
   },
   {
-    label: 'Contractor Access',
+    label: 'Worker Access',
     us: 'Nearby jobs with filters and swipes',
     them: 'Static listings with stale leads',
     icon: (
@@ -84,7 +84,7 @@ export default function SignUpForm() {
             <span className="text-gray-400">not generic bookings.</span>
           </h2>
           <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
-            Konektly is built for short-term jobs: businesses post work, contractors apply, and businesses hire the right person for the gap.
+            Konektly is built for short-term jobs: businesses post work, workers apply, and businesses hire the right person for the gap.
           </p>
         </motion.div>
 
@@ -184,14 +184,14 @@ export default function SignUpForm() {
                   >
                     <div>
                       <h3 className="text-xl sm:text-2xl font-bold text-black mb-1">Get early access</h3>
-                      <p className="text-sm text-gray-500">Create a contractor or business account and get started on Konektly.</p>
+                      <p className="text-sm text-gray-500">Create a worker or business account and get started on Konektly.</p>
                     </div>
 
                     {/* Role toggle */}
                     <div className="flex rounded-xl border border-gray-200 overflow-hidden p-1 bg-gray-50 gap-1">
                       {[
                         { value: 'client', label: 'I am a business' },
-                        { value: 'provider', label: 'I am a contractor' },
+                        { value: 'provider', label: 'I am a worker' },
                       ].map((opt) => (
                         <button
                           key={opt.value}

@@ -69,9 +69,16 @@ export default function Footer() {
               <li>
                 <a href="#contact" className="text-sm sm:text-base text-gray-400 hover:text-white transition-colors">Contact</a>
               </li>
-                  <li>
-                    <a href="/register" className="text-sm sm:text-base text-gray-400 hover:text-white transition-colors">Sign up now</a>
-                  </li>
+              <li>
+                <a
+                  href="https://apps.apple.com/us/app/konektly/id6761184414"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm sm:text-base text-gray-400 hover:text-white transition-colors"
+                >
+                  Download iOS App
+                </a>
+              </li>
             </ul>
           </div>
 

@@ -233,7 +233,7 @@ export default function SignUpForm() {
                       disabled={status === 'loading'}
                       className="w-full bg-black text-white py-3.5 rounded-xl font-semibold text-sm sm:text-base hover:bg-gray-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                      {status === 'loading' ? 'Sending...' : 'Get Started Free →'}
+                      {status === 'loading' ? 'Sending...' : 'Send me the app link →'}
                     </button>
 
                     <p className="text-xs text-gray-400 text-center">

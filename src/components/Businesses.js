@@ -1,7 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
+
+const APP_STORE_URL = 'https://apps.apple.com/us/app/konektly/id6761184414';
 
 const BENEFITS = [
   {
@@ -61,8 +62,6 @@ const METRICS = [
 ];
 
 export default function Businesses() {
-  const router = useRouter();
-
   return (
     <section id="businesses" className="py-16 sm:py-24 bg-gray-50 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative">
@@ -102,8 +101,7 @@ export default function Businesses() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="flex gap-4 p-5 sm:p-6 bg-white rounded-2xl border border-gray-200 hover:shadow-sm transition-shadow duration-300 cursor-pointer"
-                onClick={() => router.push('/register')}
+                className="flex gap-4 p-5 sm:p-6 bg-white rounded-2xl border border-gray-200 hover:shadow-sm transition-shadow duration-300"
               >
                 <div className={`w-10 h-10 ${b.bg} ${b.border} border rounded-xl flex items-center justify-center ${b.color} flex-shrink-0 mt-0.5`}>
                   {b.icon}
@@ -174,12 +172,14 @@ export default function Businesses() {
                 </div>
 
                 {/* Emergency button */}
-                <button
-                  onClick={() => router.push('/register')}
-                  className="w-full bg-black text-white py-3 rounded-xl text-sm font-semibold hover:bg-gray-800 transition-colors"
+                <a
+                  href={APP_STORE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full bg-black text-white py-3 rounded-xl text-sm font-semibold hover:bg-gray-800 transition-colors text-center"
                 >
-                  + Post Opening
-                </button>
+                  Start posting in app
+                </a>
               </div>
             </div>
           </motion.div>
@@ -198,10 +198,12 @@ export default function Businesses() {
             <p className="text-sm text-gray-400">Create a business profile, verify your account, and start reaching workers on Konektly.</p>
           </div>
           <a
-            href="/register"
+            href={APP_STORE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex-shrink-0 bg-white text-black px-6 py-3 rounded-xl font-semibold text-sm sm:text-base hover:bg-gray-100 transition-colors whitespace-nowrap"
           >
-            Get Started Free →
+            Download iOS App →
           </a>
         </motion.div>
 

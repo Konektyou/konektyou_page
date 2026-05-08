@@ -85,10 +85,12 @@ export default function Hero() {
                 Download for iOS
               </a>
               <a
-                href="/register"
+                href={APP_STORE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex min-h-12 items-center justify-center border border-black/20 bg-white px-5 py-3 font-semibold text-black hover:border-black/45 transition-colors"
               >
-                Post a job
+                Start posting in app
               </a>
             </motion.div>
 
